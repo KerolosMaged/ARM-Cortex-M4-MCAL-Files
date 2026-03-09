@@ -8,6 +8,9 @@ Github      : https://github.com/KerolosMaged
 #ifndef RCC_PRIVATE_H
 #define RCC_PRIVATE_H
 
+#include "../LIB/STD_TYPES_MATH.h"
+
+
 /*============================= CLOCK REGISTERS =================================*/
 
 #define     RCC_CR              *(( volatile uint32_t* )(0x40023800))
