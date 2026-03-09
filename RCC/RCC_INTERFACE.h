@@ -9,4 +9,13 @@ Github      : https://github.com/KerolosMaged
 #define RCC_INTERFACE_H
 
 
+void RCC_VoidSysInit( void );
+
+void RCC_VoidStatusPeripheral_CLK(uint8_t BUS ,uint8_t Peripheral ,uint8_t Status);
+
+void RCC_VoidStatusPeripheral_LPCLK(uint8_t BUS ,uint8_t Peripheral ,uint8_t Status);
+
+void RCC_Void_Peripheral_RESET(uint8_t BUS ,uint8_t Peripheral );
+
+
 #endif
