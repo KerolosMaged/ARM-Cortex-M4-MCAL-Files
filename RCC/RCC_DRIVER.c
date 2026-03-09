@@ -15,7 +15,7 @@ Github      : https://github.com/KerolosMaged
 
 
 
-void SystemInit( void ){
+void RCC_VoidSysInit( void ){
     
     #if   (RCC_CLK==RCC_HSE)            // HSE selection
 

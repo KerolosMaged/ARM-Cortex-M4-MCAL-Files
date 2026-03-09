@@ -11,7 +11,7 @@ Github      : https://github.com/KerolosMaged
 #include "../LIB/STD_TYPES_MATH.h"
 
 
-void SystemInit( void );
+void RCC_VoidSysInit( void );
 
 void RCC_VoidStatusPeripheral_CLK(uint8_t BUS ,uint8_t Peripheral ,uint8_t Status);
 
