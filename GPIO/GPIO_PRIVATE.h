@@ -1,5 +1,16 @@
+/*========================================================
+File        : GPIO_CONFGR
+Description : This file contain GPIO main registers and bit names 
+Author      : Kerolos Maged Amin Fekry
+Date        : 9/2/2026
+Github      : https://github.com/KerolosMaged
+========================================================*/
 #ifndef     GPIO_PRIVATE_H
 #define     GPIO_PRIVATE_H
+
+
+
+
 
 
 /*======================= GPIOA Registers =========================*/
