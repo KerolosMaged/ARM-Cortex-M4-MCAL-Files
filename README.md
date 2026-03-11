@@ -205,12 +205,6 @@ arm-none-eabi-objcopy -O binary output.elf output.bin
 st-flash write output.bin 0x08000000
 ```
 
-### Flash via OpenOCD
-
-```bash
-openocd -f interface/stlink.cfg -f target/stm32f4x.cfg \
-  -c "program output.elf verify reset exit"
-```
 
 ### Debug with GDB + OpenOCD
 
@@ -253,6 +247,3 @@ Embedded Systems Engineer — ARM Cortex-M4 Bare-Metal MCAL
 
 ---
 
-## License
-
-This project is open-source. See [LICENSE](LICENSE) for details.
