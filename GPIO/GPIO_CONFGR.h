@@ -8,16 +8,25 @@ Github      : https://github.com/KerolosMaged
 #ifndef GPIO_CONFGR_H
 #define GPIO_CONFGR_H
 
+#include "../LIB/STD_TYPES_MATH.h"
+
+
+#define     LOW                 0
+#define     HIGH                1
+
+/*=============== MODE ===============*/
 
 #define     INPUT               0
 #define     OUTPUT              1
 #define     AF                  2
 #define     ANALOG              3
 
+/*=============== OTYPE ==============*/
 
 #define     OUTPUT_PUPD         0
 #define     OUTPUT_OPEN_DRAIN   1
 
+/*=============== SPEED ==============*/
 
 #define     LOW_SPEED           0
 #define     MID_SPEED           1
@@ -32,8 +41,29 @@ Github      : https://github.com/KerolosMaged
 
 /*=================================*/
 
-#define     LOW                 0
-#define     HIGH                1
+typedef struct {
+
+    uint8_t    PIN;
+    uint8_t    MODE;
+    uint8_t    OTYPE;
+    uint8_t    SPEED;
+    uint8_t    PULL;
+    uint8_t    AFR;
+
+
+}GPIO_Init_Def;
+
+/*
+
+    GPIO_Init_DefPIN = PIN15;          // >>>>> 15     
+    GPIO_Init_Def.MODE = OUTPUT;        // >>>>>  1      SET_BIT()
+    GPIO_Init_Def.OTYPE = OUTPUT_PUPD ; // >>>>>  0
+    GPIO_Init_Def.SPEED = HIGH;         // >>>>>  2
+    GPIO_Init_Def.AFR ;                 // >>>>> 15
+
+
+*/
+
 
 
 /*========== Define Pins =========*/
