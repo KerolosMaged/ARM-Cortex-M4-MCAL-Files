@@ -33,6 +33,11 @@ Github      : https://github.com/KerolosMaged
 #define     HIGH_SPEED          2
 #define     V_HIGH_SPEED        3
 
+/*=============== PULL ==============*/
+
+#define		PULL_UP				1
+#define		PULL_DOWN			2
+
 /*========== Define Ports =========*/
 
 #define     GPIOA               0

@@ -8,17 +8,21 @@ Github      : https://github.com/KerolosMaged
 
 /********** Include STD_TYPES_MATH file ***********/
 #include "../LIB/STD_TYPES_MATH.h"
+/*********** Include of RCC files  **********/
+#include "../RCC/RCC_CONFGR.h"
+#include "../RCC/RCC_INTERFACE.h"
+#include "../RCC/RCC_PRIVATE.h"
 /*********** Include of GPIO files  **********/
 #include "GPIO_CONFGR.h"
 #include "GPIO_INTERFACE.h"
-
+#include "GPIO_PRIVATE.h"
 
 void GPIO_Init( uint8_t GPIOx , GPIO_Init_Def *CFG ) {
     uint8_t pin = CFG->PIN ;
     switch(GPIOx)
     {   
         case GPIOA   :  
-            RCC_VoidStatusPeripheral_CLK(RCC_AHB1,GPIOAEN,EN);
+            RCC_VoidStatusPeripheral_CLK(RCC_AHB1,GPIOAEN,ENABLE);
             /*----------- MODE --------------*/ 
             GPIOA_MODER &= ~(3 << (pin*2));
             GPIOA_MODER |=  ( CFG->MODE << (pin*2));
@@ -51,7 +55,7 @@ void GPIO_Init( uint8_t GPIOx , GPIO_Init_Def *CFG ) {
 
 
         case GPIOB   :
-            RCC_VoidStatusPeripheral_CLK(RCC_AHB1,GPIOBEN,EN);        
+            RCC_VoidStatusPeripheral_CLK(RCC_AHB1,GPIOBEN,ENABLE);
             /*----------- MODE --------------*/ 
             GPIOB_MODER &= ~(3 << (pin*2));
             GPIOB_MODER |=  ( CFG->MODE << (pin*2));
@@ -83,7 +87,7 @@ void GPIO_Init( uint8_t GPIOx , GPIO_Init_Def *CFG ) {
         break;
         
         case GPIOC   :
-            RCC_VoidStatusPeripheral_CLK(RCC_AHB1,GPIOEN,EN);        
+            RCC_VoidStatusPeripheral_CLK(RCC_AHB1,GPIOCEN,ENABLE);
         
             /*----------- MODE --------------*/ 
             GPIOC_MODER &= ~(3 << (pin*2));
@@ -139,7 +143,8 @@ void GPIO_VoidWritePin( uint32_t GPIOx, uint8_t PINx, uint8_t STATYUS){
                 case GPIOB :    SET_BIT(GPIOB_BSRR,PINx);       break;
                 case GPIOC :    SET_BIT(GPIOC_BSRR,PINx);       break;
                 default    :                                    break;
-            }      
+            }
+        break;
 
         case LOW :
             switch (GPIOx)
@@ -149,6 +154,7 @@ void GPIO_VoidWritePin( uint32_t GPIOx, uint8_t PINx, uint8_t STATYUS){
                 case GPIOC :    SET_BIT(GPIOC_BSRR,(PINx+16));   break;
                 default    :                                     break;
             }
+        break;
         default   :                                              break;    
     }
 
@@ -171,10 +177,10 @@ void GPIO_VoidTogglePin( uint32_t GPIOx, uint8_t PINx){
 
         switch (GPIOx)
         {
-            case GPIOA :    VALUE = TOGGLE_BIT(GPIOA_ODR,PINx);       break;
-            case GPIOB :    VALUE = TOGGLE_BIT(GPIOB_ODR,PINx);       break;
-            case GPIOC :    VALUE = TOGGLE_BIT(GPIOC_ODR,PINx);       break;
-            default    :                                              break;
+            case GPIOA :    TOGGLE_BIT(GPIOA_ODR,PINx);       break;
+            case GPIOB :    TOGGLE_BIT(GPIOB_ODR,PINx);       break;
+            case GPIOC :    TOGGLE_BIT(GPIOC_ODR,PINx);       break;
+            default    :                                      break;
         }
 
 }

@@ -7,9 +7,16 @@ Github      : https://github.com/KerolosMaged
 ========================================================*/
 #ifndef GPIO_INTERFACE_H
 #define GPIO_INTERFACE_H
+#include  "GPIO_CONFGR.h"
+#include "../LIB/STD_TYPES_MATH.h"
 
-void GPIO_VoidInit( uint32_t GPIOx, uint8_t PINx, uint8_t MODE ,uint8_t PULL, uint8_t SPEED );
-void GPIO_VoidWrite( uint32_t GPIOx, uint8_t PINx, uint8_t STATYUS);
-uint8_t GPIO_uint8_tRead( uint32_t GPIOx, uint8_t PINx,);
-void GPIO_VoidToggle( uint32_t GPIOx, uint8_t PINx);
+
+void GPIO_Init( uint8_t GPIOx , GPIO_Init_Def *CFG );
+
+void GPIO_VoidWritePin( uint32_t GPIOx, uint8_t PINx, uint8_t STATYUS);
+uint8_t GPIO_uint8_tReadPin( uint32_t GPIOx, uint8_t PINx);
+
+void GPIO_VoidTogglePin( uint32_t GPIOx, uint8_t PINx);
+
+
 #endif
