@@ -10,8 +10,7 @@ Github      : https://github.com/KerolosMaged
 
 
 
-void SYSCFG_Init(uint8_t PORT,);
-
+void SYSCFG_SetEXTI(uint8_t PORT, uint8_t PIN);
 
 
 

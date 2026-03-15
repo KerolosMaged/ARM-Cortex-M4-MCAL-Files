@@ -20,15 +20,23 @@ Github      : https://github.com/KerolosMaged
 
 
 
+void SYSCFG_SetEXTI(uint8_t PORT, uint8_t PIN){
 
-void SYSCFG_Init(uint8_t PORT,){
-
-    #if   (PORT==PORTA)
-
-    #elif (PORT==PORTB)
-    
-    #elif (PORT==PORTC)
-    
-    #endif
+    if(PIN < 4)
+    {
+        SYSCFG_EXTICR1 |= (PORT << ((PIN % 4) * 4));
+    }
+    else if(PIN < 8)
+    {
+        SYSCFG_EXTICR2 |= (PORT << ((PIN % 4) * 4));
+    }
+    else if(PIN < 12)
+    {
+        SYSCFG_EXTICR3 |= (PORT << ((PIN % 4) * 4));
+    }
+    else if(PIN < 16)
+    {
+        SYSCFG_EXTICR4 |= (PORT << ((PIN % 4) * 4));
+    }
 
 }

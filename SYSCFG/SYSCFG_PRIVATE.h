@@ -11,13 +11,13 @@ Github      : https://github.com/KerolosMaged
 
 /*==================== SYSCFG Registers =====================*/
 
-#define     SYSCFG_MEMRMP       *((volatile uint8_t* )(0x40013800))
+#define     SYSCFG_MEMRMP       *((volatile uint32_t*)(0x40013800))
 #define     SYSCFG_PMC          *((volatile uint32_t*)(0x40013804))
-#define     SYSCFG_EXTICR1      *((volatile uint16_t*)(0x40013808))
-#define     SYSCFG_EXTICR2      *((volatile uint16_t*)(0x4001380C))
-#define     SYSCFG_EXTICR3      *((volatile uint16_t*)(0x40013810))
-#define     SYSCFG_EXTICR4      *((volatile uint16_t*)(0x40013814))
-#define     SYSCFG_CMPCR        *((volatile uint16_t*)(0x40013820))
+#define     SYSCFG_EXTICR1      *((volatile uint32_t*)(0x40013808))
+#define     SYSCFG_EXTICR2      *((volatile uint32_t*)(0x4001380C))
+#define     SYSCFG_EXTICR3      *((volatile uint32_t*)(0x40013810))
+#define     SYSCFG_EXTICR4      *((volatile uint32_t*)(0x40013814))
+#define     SYSCFG_CMPCR        *((volatile uint32_t*)(0x40013820))
 
 
 
