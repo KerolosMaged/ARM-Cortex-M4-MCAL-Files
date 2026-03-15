@@ -12,7 +12,7 @@ Github      : https://github.com/KerolosMaged
 #define NVIC_CONFGR_H
 
 
-
+/*======================= ENUM for vector table of Interrups ========================== */
 
 typedef enum {
 
@@ -23,10 +23,10 @@ typedef enum {
         NVIC_BusFault                     = -11,
         NVIC_UsageFault                   = -10,
         NVIC_SVCall                       =  -5,
-        NVIC_Debug_Monito                 =  -4,
+        NVIC_Debug_Monitor                 =  -4,
         NVIC_PendSV                       =  -2,
         NVIC_Systick                      =  -1,
-    
+
         NVIC_WWDG                         =   0,
         NVIC_EXTI16_PVD                   =   1,
         NVIC_EXTI21__TAMP_STAMP           =   2,
@@ -86,6 +86,6 @@ typedef enum {
 
 } IRQn_Type;
 
-
+/*======================================================================================*/
 
 #endif
