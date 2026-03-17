@@ -21,6 +21,7 @@ Github      : https://github.com/KerolosMaged
 
 
 void SYSCFG_SetEXTI(uint8_t PORT, uint8_t PIN){
+    RCC_VoidStatusPeripheral_CLK(RCC_APB2ENR,SYSCFGEN,ENABLE);
 
     if(PIN < 4)
     {

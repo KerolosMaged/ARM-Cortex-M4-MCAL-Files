@@ -15,12 +15,13 @@ Github      : https://github.com/KerolosMaged
 
 /*================ EXTI Registers =============*/
 
-#define     EXTI_IMR        *(( volatile uint32_t * )(0x40013C00))
+#define     EXTI_IMR        *(( volatile uint32_t * )(0x40013C00))      
 #define     EXTI_EMR        *(( volatile uint32_t * )(0x40013C04))
 #define     EXTI_RTSR       *(( volatile uint32_t * )(0x40013C08))
 #define     EXTI_FTSR       *(( volatile uint32_t * )(0x40013C0C))
 #define     EXTI_SWIER      *(( volatile uint32_t * )(0x40013C10))
 #define     EXTI_PR         *(( volatile uint32_t * )(0x40013C14))
+
 
 
 

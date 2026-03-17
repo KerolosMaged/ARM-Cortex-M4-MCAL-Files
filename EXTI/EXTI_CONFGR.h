@@ -13,8 +13,22 @@ Github      : https://github.com/KerolosMaged
 #include "../LIB/STD_TYPES_MATH.h"
 
 
+typedef enum{
+    
+    Rising_trigger,
+    Falling_trigger,
+    Both_trigger
+
+}Trigger_type;
 
 
+typedef enum{
+    
+    INTERRUPT,
+    EVENT
+
+
+}ُْEXTI_type;
 
 
 

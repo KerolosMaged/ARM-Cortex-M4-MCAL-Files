@@ -8,9 +8,17 @@ Github      : https://github.com/KerolosMaged
 #ifndef     EXTI_INTERFACE_H
 #define     EXTI_INTERFACE_H
 
+#include "../LIB/STD_TYPES_MATH.h"
+#include "EXTI_CONFGR.h"
 
 
+void EXTI_Init(uint8_t EXTI_PORT,uint8_t EXTI_PIN,Trigger_type Trigger_type);
 
+void EXTI_VoidEnable(uint8_t EXTI_PIN, EXTI_type EXTI);
+void EXTI_VoidDisable(uint8_t EXTI_PIN , EXTI_type EXTI);
+
+uint8_t EXTI_GetPending(uint8_t EXTI_PIN);
+void EXTI_ClearPending(uint8_t EXTI_PIN);
 
 
 
