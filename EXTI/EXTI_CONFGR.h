@@ -28,7 +28,7 @@ typedef enum{
     EVENT
 
 
-}ُْEXTI_type;
+}EXTI_type;
 
 
 

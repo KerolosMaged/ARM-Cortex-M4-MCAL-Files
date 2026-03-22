@@ -136,18 +136,18 @@ void EXTI4_IRQHandler(void){
 
 void EXTI9_5_IRQHandler(void) {
     for(int i = 5; i <= 9; i++) {
-        if(READ_BIT(EXTI->PR, (1 << i))) {
+        if(GET_BIT(EXTI_PR, (1 << i))) {
             if(EXTI_CALLBACK[i] != NULL) EXTI_CALLBACK[i]();
-            SET_BIT(EXTI->PR, (1 << i));
+            SET_BIT(EXTI_PR, (1 << i));
         }
     }
 }
 
 void EXTI15_10_IRQHandler(void) {
     for(int i = 10; i <= 15; i++) {
-        if(READ_BIT(EXTI->PR, (1 << i))) {
+        if(GET_BIT(EXTI_PR, (1 << i))) {
             if(EXTI_CALLBACK[i] != NULL) EXTI_CALLBACK[i]();
-            SET_BIT(EXTI->PR, (1 << i));
+            SET_BIT(EXTI_PR, (1 << i));
         }
     }
 }

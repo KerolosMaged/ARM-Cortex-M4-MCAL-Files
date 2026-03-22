@@ -6,7 +6,7 @@
 #include "GPIO/GPIO_PRIVATE.h"
 #include "GPIO/GPIO_CONFGR.h"
 
-/*
+
 #include "NVIC/NVIC_CONFGR.h"
 #include "NVIC/NVIC_INTERFACE.h"
 #include "NVIC/NVIC_PRIVATE.h"
@@ -19,7 +19,7 @@
 #include "EXTI/EXTI_INTERFACE.h"
 #include "EXTI/EXTI_PRIVATE.h"
 
-*/
+
 
 void delay(void)
 {
@@ -46,7 +46,6 @@ void BUTTON_ACCESS(uint8_t Copy_port,uint8_t Copy_pin){
 int main(void)
 {
 	RCC_VoidSysInit();
-
 	//GPIO_Init_Def LED_config;
 
 	LED_ACCESS(GPIOA,PIN12);
