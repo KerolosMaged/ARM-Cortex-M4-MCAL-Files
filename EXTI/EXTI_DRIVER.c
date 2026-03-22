@@ -25,7 +25,7 @@ Github      : https://github.com/KerolosMaged
 #include "EXTI_INTERFACE.h"
 #include "EXTI_PRIVATE.h"
 
-
+static void (*EXTI_CALLBACK[16]) (void) = { 0 } ; 
 
 
 
@@ -86,3 +86,68 @@ void EXTI_ClearPending(uint8_t EXTI_PIN){
 
 
 
+void EXTI_SetCallBack(uint8_t EXTI_PIN,void(*EXTI_Ptr)(void)){
+
+    EXTI_CALLBACK[EXTI_PIN] = EXTI_Ptr;
+
+}
+
+
+void EXTI0_IRQHandler(void){
+
+    if(EXTI_CALLBACK[0]!= NULL){
+        EXTI_CALLBACK[0](); 
+    }
+    SET_BIT(EXTI_PR,PIN0);
+}
+
+void EXTI1_IRQHandler(void){
+
+    if(EXTI_CALLBACK[1]!= NULL){
+        EXTI_CALLBACK[1](); 
+    }
+    SET_BIT(EXTI_PR,PIN1);
+}
+
+void EXTI2_IRQHandler(void){
+
+    if(EXTI_CALLBACK[2]!= NULL){
+        EXTI_CALLBACK[2](); 
+    }
+    SET_BIT(EXTI_PR,PIN2);
+
+}
+void EXTI3_IRQHandler(void){
+
+    if(EXTI_CALLBACK[3]!= NULL){
+        EXTI_CALLBACK[3](); 
+    }
+    SET_BIT(EXTI_PR,PIN3);
+
+}
+void EXTI4_IRQHandler(void){
+
+    if(EXTI_CALLBACK[4]!= NULL){
+        EXTI_CALLBACK[4](); 
+    }
+    SET_BIT(EXTI_PR,PIN4);    
+
+}
+
+void EXTI9_5_IRQHandler(void) {
+    for(int i = 5; i <= 9; i++) {
+        if(READ_BIT(EXTI->PR, (1 << i))) {
+            if(EXTI_CALLBACK[i] != NULL) EXTI_CALLBACK[i]();
+            SET_BIT(EXTI->PR, (1 << i));
+        }
+    }
+}
+
+void EXTI15_10_IRQHandler(void) {
+    for(int i = 10; i <= 15; i++) {
+        if(READ_BIT(EXTI->PR, (1 << i))) {
+            if(EXTI_CALLBACK[i] != NULL) EXTI_CALLBACK[i]();
+            SET_BIT(EXTI->PR, (1 << i));
+        }
+    }
+}
