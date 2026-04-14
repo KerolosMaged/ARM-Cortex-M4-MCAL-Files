@@ -19,12 +19,10 @@
 #include "EXTI/EXTI_INTERFACE.h"
 #include "EXTI/EXTI_PRIVATE.h"
 
+#include "SYSTICK/SYSTICK_CONFGR.h"
+#include "SYSTICK/SYSTICK_INTERFACE.h"
+#include "SYSTICK/SYSTICK_PRIVATE.h"
 
-
-void delay(void)
-{
-    for(volatile int i=0;i<500000;i++);
-}
 
 
 void LED_ACCESS(uint8_t Copy_port,uint8_t Copy_pin){
@@ -46,53 +44,22 @@ void BUTTON_ACCESS(uint8_t Copy_port,uint8_t Copy_pin){
 
 uint8_t LED2_State = 0;
 
-void MyCallback(void){
-    if(LED2_State == 0){
-        // ضغطة أولى → نور LED2 وأوقف الفلاشنج
-        LED2_State = 1;
-        GPIO_VoidWritePin(GPIOB, PIN13, HIGH);
-    }
-    else{
-        // ضغطة تانية → طفي LED2 وارجع فلاشنج
-        LED2_State = 0;
-        GPIO_VoidWritePin(GPIOB, PIN13, LOW);
-    }
-}
+
 
 int main(void)
 {
-    RCC_VoidSysInit();
+	RCC_VoidSysInit();
 
-    LED_ACCESS(GPIOB, PIN12);
-    LED_ACCESS(GPIOB, PIN13);
-    BUTTON_ACCESS(GPIOA, PIN0);
+	SysTick_Init();
 
-    EXTI_Init(GPIOA, PIN0, Rising_trigger);
-    EXTI_SetCallBack(PIN0, MyCallback);
-    NVIC_EnableIRQ(NVIC_EXTI0);
-    EXTI_VoidEnable(PIN0, INTERRUPT);
+	LED_ACCESS(GPIOC,PIN13);
 
-    while(1){
 
-        // LED1 دايماً فلاشنج
-        GPIO_VoidWritePin(GPIOB, PIN12, HIGH);
-        delay();
+	while (1){
+		GPIO_VoidWritePin(GPIOC, PIN13, HIGH);
+		SysTick_VoidDelay_ms(2000);
+		GPIO_VoidWritePin(GPIOC, PIN13, LOW);
+		SysTick_VoidDelay_ms(1000);
+	}
 
-        // شغل LED2 لو state = 1
-        if(LED2_State){
-            GPIO_VoidWritePin(GPIOB, PIN13, HIGH);
-        } else {
-            GPIO_VoidWritePin(GPIOB, PIN13, LOW);
-        }
-
-        GPIO_VoidWritePin(GPIOB, PIN12, LOW);
-        delay();
-
-        // تأكد تاني بعد التأخير
-        if(LED2_State){
-            GPIO_VoidWritePin(GPIOB, PIN13, HIGH);
-        } else {
-            GPIO_VoidWritePin(GPIOB, PIN13, LOW);
-        }
-    }
 }
