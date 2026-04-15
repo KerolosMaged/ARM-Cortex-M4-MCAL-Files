@@ -14,12 +14,12 @@ Github      : https://github.com/KerolosMaged
 
 
 void SysTick_Init(void);
-void SysTick_VoidDelay_ms(uint32_t time);
+void SysTick_VoidDelay_ms(void);
 void SysTick_VoidDelay_us(uint32_t time);
 void SysTick_Start_IT(uint32_t ticks);
 void SysTick_SetCallback(void (*ptr)(void));
 void SysTick_Stop(void);
 
 
-
+void SysTick_DelayHandler(uint32_t time);
 #endif

@@ -52,14 +52,14 @@ int main(void)
 
 	SysTick_Init();
 
-	LED_ACCESS(GPIOC,PIN13);
+	LED_ACCESS(GPIOA,PIN8);
 
 
 	while (1){
-		GPIO_VoidWritePin(GPIOC, PIN13, HIGH);
-		SysTick_VoidDelay_ms(2000);
-		GPIO_VoidWritePin(GPIOC, PIN13, LOW);
-		SysTick_VoidDelay_ms(1000);
+		GPIO_VoidWritePin(GPIOA, PIN8, HIGH);
+		SysTick_DelayHandler(2000);
+		GPIO_VoidWritePin(GPIOA, PIN8, LOW);
+		SysTick_DelayHandler(1000);
 	}
 
 }
