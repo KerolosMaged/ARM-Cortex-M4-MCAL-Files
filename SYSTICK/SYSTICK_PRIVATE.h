@@ -16,7 +16,7 @@ Github      : https://github.com/KerolosMaged
 #define     STK_VAL      *(( volatile uint32_t* )(0xE000E018))
 #define     STK_CALIB    *(( volatile uint32_t* )(0xE000E01C))
 
-#define     FCLK             25000000UL
+#define     F_CLK             25000000UL
 
 
 #endif

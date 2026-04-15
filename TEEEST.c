@@ -46,6 +46,8 @@ uint8_t LED2_State = 0;
 
 
 
+
+
 int main(void)
 {
 	RCC_VoidSysInit();
@@ -57,9 +59,10 @@ int main(void)
 
 	while (1){
 		GPIO_VoidWritePin(GPIOA, PIN8, HIGH);
-		SysTick_DelayHandler(2000);
+		SysTick_VoidDelay_ms(2000);
 		GPIO_VoidWritePin(GPIOA, PIN8, LOW);
-		SysTick_DelayHandler(1000);
+		SysTick_VoidDelay_ms(2000);
 	}
 
 }
+

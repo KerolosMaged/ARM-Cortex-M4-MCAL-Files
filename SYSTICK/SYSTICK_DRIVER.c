@@ -19,16 +19,17 @@ Github      : https://github.com/KerolosMaged
 
 void SysTick_Init(void){
 
-    SET_BIT(STK_CTRL,2);
 
+    SET_BIT(STK_CTRL,2);  
 }
 
 
 
-void SysTick_VoidDelay_ms(void){
+
+void SysTick_VoidDelay_ms(uint32_t time){
 
    
-    uint32_t LOAD = ((FCLK / 1000) - 1);
+    uint32_t LOAD = ((time*(F_CLK / 1000)) - 1);
     
     STK_VAL = 0x00000000 ;
     STK_LOAD = LOAD;
@@ -42,14 +43,12 @@ void SysTick_VoidDelay_ms(void){
 }
 
 
-
-
 void SysTick_VoidDelay_us(uint32_t time){
    
-        uint32_t LOAD = (((FCLK / 1000000)) - 1);
-    
-        STK_VAL = 0x00000000 ;
+        uint32_t LOAD = ((time*(F_CLK / 1000000)) - 1);
         STK_LOAD = LOAD;
+
+        STK_VAL = 0x00000000 ;
         SET_BIT(STK_CTRL,0);
         
         while(GET_BIT(STK_CTRL,16)!=1);
@@ -60,12 +59,4 @@ void SysTick_VoidDelay_us(uint32_t time){
 }
 
 
-void SysTick_DelayHandler(uint32_t time){
-
-    for (uint32_t SYSCOUNT = 0 ; SYSCOUNT<time ; SYSCOUNT++)
-    {
-        SysTick_VoidDelay_ms();
-    }
-
-
-}
+// under workkkkkkk
