@@ -19,9 +19,6 @@
 #include "EXTI/EXTI_INTERFACE.h"
 #include "EXTI/EXTI_PRIVATE.h"
 
-#include "SYSTICK/SYSTICK_CONFGR.h"
-#include "SYSTICK/SYSTICK_INTERFACE.h"
-#include "SYSTICK/SYSTICK_PRIVATE.h"
 
 
 
@@ -59,9 +56,9 @@ int main(void)
 
 	while (1){
 		GPIO_VoidWritePin(GPIOA, PIN8, HIGH);
-		SysTick_VoidDelay_ms(2000);
+
 		GPIO_VoidWritePin(GPIOA, PIN8, LOW);
-		SysTick_VoidDelay_ms(2000);
+
 	}
 
 }
