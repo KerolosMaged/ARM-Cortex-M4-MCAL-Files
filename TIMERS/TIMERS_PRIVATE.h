@@ -11,7 +11,7 @@ Github      : https://github.com/KerolosMaged
 
 
 
-/********** Registers of ( TIM1 ) *************/
+/*********** Registers of ( TIM1 ) *************/
 
 typedef struct {
     volatile uint32_t    CR1;
