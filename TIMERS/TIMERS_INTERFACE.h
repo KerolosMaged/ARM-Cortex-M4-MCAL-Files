@@ -9,6 +9,6 @@ Github      : https://github.com/KerolosMaged
 #ifndef TIMERS_INTERFACE_H
 #define TIMERS_INTERFACE_H
 
-
+void Void_TIM1_Init(void);
 
 #endif

@@ -26,3 +26,11 @@ Github      : https://github.com/KerolosMaged
 #include "TIMERS_PRIVATE.h"
 
 
+void Void_TIM1_Init(void){
+
+    RCC_VoidStatusPeripheral_CLK(RCC_APB2,TIM1EN,ENABLE);
+
+    Clk_SR TIM1 = CK_INT;
+
+
+}

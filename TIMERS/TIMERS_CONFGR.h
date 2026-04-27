@@ -11,5 +11,24 @@ Github      : https://github.com/KerolosMaged
 #define TIMERS_CONFGR_H
 
 
+/*------------ Counter Mode selection -----------*/
+typedef enum {
+    uint
+
+
+}CNS_MODE;
+
+/*------------ CLOCK selection -----------*/
+typedef enum {
+
+    uint8_t   CK_INT;       // APB BUS CLOCK
+    uint8_t   CK_TIx;       // FRON EXTERNAL CLOCK IN PIN 
+    uint8_t   CK_ETR;       // FRON EXTERNAL CLOCK IN PIN 
+    uint8_t   CK_ITRx;      // INTERNAL CLOCK FROM ANOTHER TIMER
+
+}Clk_SR;
+
+
+
 
 #endif
