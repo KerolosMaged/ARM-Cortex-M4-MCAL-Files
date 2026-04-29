@@ -6,7 +6,6 @@
 #include "GPIO/GPIO_PRIVATE.h"
 #include "GPIO/GPIO_CONFGR.h"
 
-
 #include "NVIC/NVIC_CONFGR.h"
 #include "NVIC/NVIC_INTERFACE.h"
 #include "NVIC/NVIC_PRIVATE.h"
@@ -19,6 +18,9 @@
 #include "EXTI/EXTI_INTERFACE.h"
 #include "EXTI/EXTI_PRIVATE.h"
 
+#include "TIMERS/TIMERS_CONFGR.h"
+#include "TIMERS/TIMERS_INTERFACE.h"
+#include "TIMERS/TIMERS_PRIVATE.h"
 
 
 
@@ -47,17 +49,23 @@ uint8_t LED2_State = 0;
 
 int main(void)
 {
+	Void_TIMx_Init(TIM1_ID);
+
 	RCC_VoidSysInit();
 
-	SysTick_Init();
 
-	LED_ACCESS(GPIOA,PIN8);
 
+	LED_ACCESS(GPIOC,PIN13);
 
 	while (1){
-		GPIO_VoidWritePin(GPIOA, PIN8, HIGH);
-
-		GPIO_VoidWritePin(GPIOA, PIN8, LOW);
+		GPIO_VoidWritePin(GPIOC,PIN13, HIGH);
+		Void_Set_Counter(TIM1_ID,UP,Edge_aligned,24000,1000);
+		while (!(TIM1->SR & (1 << 0)));  // Wait for update event
+		TIM1->SR &= ~(1 << 0);           // Clear update flag
+		GPIO_VoidWritePin(GPIOC,PIN13, LOW);
+		Void_Set_Counter(TIM1_ID,UP,Edge_aligned,24000,1000);
+		while (!(TIM1->SR & (1 << 0)));  // Wait for update event
+		TIM1->SR &= ~(1 << 0);           // Clear update flag
 
 	}
 
