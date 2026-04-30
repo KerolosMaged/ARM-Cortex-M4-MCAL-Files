@@ -26,6 +26,7 @@
 
 void LED_ACCESS(uint8_t Copy_port,uint8_t Copy_pin){
 	GPIO_Init_Def LED  ;
+	LED.SPEED = V_HIGH_SPEED;
 	LED.MODE = OUTPUT;
 	LED.PIN = Copy_pin;
 	GPIO_Init(Copy_port,&LED);
@@ -49,24 +50,24 @@ uint8_t LED2_State = 0;
 
 int main(void)
 {
-	Void_TIMx_Init(TIM1_ID);
-
 	RCC_VoidSysInit();
+	Void_TIMx_Init(TIM11_ID);
 
 
 
+
+	Void_Set_Counter(TIM11,UP,Edge_aligned,2499,2999);
 	LED_ACCESS(GPIOC,PIN13);
 
 	while (1){
 		GPIO_VoidWritePin(GPIOC,PIN13, HIGH);
-		Void_Set_Counter(TIM1_ID,UP,Edge_aligned,24000,1000);
-		while (!(TIM1->SR & (1 << 0)));  // Wait for update event
-		TIM1->SR &= ~(1 << 0);           // Clear update flag
-		GPIO_VoidWritePin(GPIOC,PIN13, LOW);
-		Void_Set_Counter(TIM1_ID,UP,Edge_aligned,24000,1000);
-		while (!(TIM1->SR & (1 << 0)));  // Wait for update event
-		TIM1->SR &= ~(1 << 0);           // Clear update flag
 
+        while(GET_BIT(TIM11->REG_SR,0) == 0);
+        CLEAR_BIT(TIM11->REG_SR,0);
+		GPIO_VoidWritePin(GPIOC,PIN13, LOW);
+
+        while(GET_BIT(TIM11->REG_SR,0) == 0);
+        CLEAR_BIT(TIM11->REG_SR,0);
 	}
 
 }

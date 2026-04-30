@@ -9,8 +9,12 @@ Github      : https://github.com/KerolosMaged
 #ifndef TIMERS_INTERFACE_H
 #define TIMERS_INTERFACE_H
 
-/*========= Timers initialization ==========*/
-void Void_TIM_Init(uint8_t TIMx);
+#include "TIMERS_CONFGR.h"
+#include "TIMERS_PRIVATE.h"
 
-void Void_Set_Counter(TIMX_t TIMx, DIRx Copy_DIR, CNS_MODE Copy_Mode, uint32_t Copy_PSC, uint32_t Copy_ARR);
+/*========= Timers initialization ==========*/
+void Void_TIMx_Init(TIMX_t TIMx);
+
+void Void_Set_Counter(TIMx_n *TIMx , DIRx Copy_DIR , CNS_MODE Copy_Mode , uint32_t Copy_PSC , uint32_t Copy_ARR );
+
 #endif
