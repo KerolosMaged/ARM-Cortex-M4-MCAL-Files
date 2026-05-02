@@ -13,12 +13,12 @@ Github      : https://github.com/KerolosMaged
 /*----------- Timers alias ----------*/
 
 typedef enum {
-    TIMER1_= 0,
-    TIMER2_= 1,
-    TIMER3_= 2,
-    TIMER4_= 3,
-    TIMER5_= 4,
-    TIMER9_= 5,
+    TIMER1= 0,
+    TIMER2= 1,
+    TIMER3= 2,
+    TIMER4= 3,
+    TIMER5= 4,
+    TIMER9= 5,
     TIMER10 = 6,
     TIMER11 = 7,
 
@@ -85,7 +85,7 @@ typedef enum {
     FORCE_ACTIVE  =0b101,
     PWM_MODE_1    =0b110,
     PWM_MODE_2    =0b111,
-=0b000,
+
 
 }OUTPUT_STATUS;
 

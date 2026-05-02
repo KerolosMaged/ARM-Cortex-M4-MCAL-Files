@@ -34,7 +34,7 @@ Github      : https://github.com/KerolosMaged
 #define     V_HIGH_SPEED        3
 
 /*=============== PULL ==============*/
-
+#define     NO_PULL 			0
 #define		PULL_UP				1
 #define		PULL_DOWN			2
 

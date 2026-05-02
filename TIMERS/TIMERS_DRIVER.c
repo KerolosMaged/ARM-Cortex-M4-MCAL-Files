@@ -198,7 +198,7 @@ void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Statu
     TIMx->REG_ARR= Copy_ARR;
     /*----- Choose of the preload -----*/
     TIMx->REG_CCMR1 &= ~(1 << 3);
-    TIMx->CR1|=(Copy_PRE<<7);
+    TIMx->REG_CR1|=(Copy_PRE<<7);
     /*---------- Disable Output Compare --------*/    
     CLEAR_BIT(TIMx->REG_CCER,CCER_E[Copy_CH]);
     /*----------- Choose the channel ---------*/
