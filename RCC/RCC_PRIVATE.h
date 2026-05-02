@@ -14,7 +14,7 @@ Github      : https://github.com/KerolosMaged
 /*============================= CLOCK REGISTERS =================================*/
 
 #define     RCC_CR              *(( volatile uint32_t* )(0x40023800))
-#define     RCC_CFGR            *(( volatile uint32_t* )(0x40023808))
+#define     RCC_CFGR            *(( volatile uint32_t* )(0x40023808)) 
 #define     RCC_CIR             *(( volatile uint32_t* )(0x4002380C))
 #define     RCC_CSR             *(( volatile uint32_t* )(0x40023874))
 #define     RCC_BDCR            *(( volatile uint32_t* )(0x40023870))

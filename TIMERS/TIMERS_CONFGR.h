@@ -13,14 +13,14 @@ Github      : https://github.com/KerolosMaged
 /*----------- Timers alias ----------*/
 
 typedef enum {
-    TIM1_ID = 0,
-    TIM2_ID = 1,
-    TIM3_ID = 2,
-    TIM4_ID = 3,
-    TIM5_ID = 4,
-    TIM9_ID = 5,
-    TIM10_ID = 6,
-    TIM11_ID = 7,
+    TIMER1_= 0,
+    TIMER2_= 1,
+    TIMER3_= 2,
+    TIMER4_= 3,
+    TIMER5_= 4,
+    TIMER9_= 5,
+    TIMER10 = 6,
+    TIMER11 = 7,
 
 }TIMX_t;
 
@@ -34,7 +34,7 @@ typedef enum{
 
 /*------------ Counter Mode selection -----------*/
 typedef enum {
-    Edge_aligned = 0,
+    Edge_aligned     = 0,
     Center_aligned_1 = 1,
     Center_aligned_2 = 2,
     Center_aligned_3 = 3,
@@ -50,7 +50,48 @@ typedef enum {
 
 }Clk_SR;
 
+/*------------ Channel selection -----------*/
+typedef enum {
+
+    CH1=0,
+    CH2=1,
+    CH3=2,
+    CH4=3,
+}T_CH;
+
+/*------------ Edge selection -----------*/
+typedef enum {
+    RISING_EDGE =0,
+    FALLING_EDGE=1,
+    BOTH_EDGE   =3,
+}T_Edge;
+
+/*------------ Divition capture selection -----------*/
+typedef enum {
+    NONE=0b00,
+    DIV_2=0b01,
+    DIV_4=0b10,
+    DIV_8=0b11,
+}C_PSC;
+
+/*------------ Compare status selection -----------*/
+typedef enum {
+
+    FROZEN        =0b000,
+    ACTIVE        =0b001,
+    INACTIVE      =0b010,
+    TOGGLE        =0b011,
+    FORCE_INACTIVE=0b100,
+    FORCE_ACTIVE  =0b101,
+    PWM_MODE_1    =0b110,
+    PWM_MODE_2    =0b111,
+=0b000,
+
+}OUTPUT_STATUS;
 
 
+typedef enum {
+    PR_DIS=0 , PR_EN=1,
+}T_PR;
 
 #endif

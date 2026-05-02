@@ -68,7 +68,7 @@ Github      : https://github.com/KerolosMaged
 
 /*------------------------------------------*/
 
-#define     AHB_PRESC       AHB_DIVIDED_  
+#define     AHB_PRESC       AHB_DIVIDED_2  
 
 /*==========================================*/
 
@@ -82,7 +82,7 @@ Github      : https://github.com/KerolosMaged
 
 /*------------------------------------------*/
 
-#define     APB1_PRESC       APB1_DIVIDED_16
+#define     APB1_PRESC       APB1_DIVIDED_2
 
 /*==========================================*/
 
@@ -96,7 +96,7 @@ Github      : https://github.com/KerolosMaged
 
 /*------------------------------------------*/
 
-#define     APB2_PRESC      APB2_DIVIDED_16
+#define     APB2_PRESC      APB2_DIVIDED_2
 
 /*==========================================*/
 

@@ -51,23 +51,23 @@ uint8_t LED2_State = 0;
 int main(void)
 {
 	RCC_VoidSysInit();
-	Void_TIMx_Init(TIM11_ID);
+	TIMERs_VoidInit(TIM1_ID);
 
 
 
 
-	Void_Set_Counter(TIM11,UP,Edge_aligned,2499,2999);
+	TIMERs_Set_Counter(TIM1, UP, Edge_aligned, 2499, 3999);
 	LED_ACCESS(GPIOC,PIN13);
 
 	while (1){
 		GPIO_VoidWritePin(GPIOC,PIN13, HIGH);
 
-        while(GET_BIT(TIM11->REG_SR,0) == 0);
-        CLEAR_BIT(TIM11->REG_SR,0);
+        while(GET_BIT(TIM1->REG_SR,0) == 0);
+        CLEAR_BIT(TIM1->REG_SR,0);
 		GPIO_VoidWritePin(GPIOC,PIN13, LOW);
 
-        while(GET_BIT(TIM11->REG_SR,0) == 0);
-        CLEAR_BIT(TIM11->REG_SR,0);
+        while(GET_BIT(TIM1->REG_SR,0) == 0);
+        CLEAR_BIT(TIM1->REG_SR,0);
 	}
 
 }
