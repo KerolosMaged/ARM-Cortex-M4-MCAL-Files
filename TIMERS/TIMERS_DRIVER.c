@@ -47,6 +47,7 @@ void TIMERs_VoidInit(TIMX_t TIMx){
 /*============================================= Timers' counter  setting =====================================================*/
 /*--------- u should know that Ttick = [(psc+1)/Fclk]     ///     over all period=[(ARR+1)*Ttick ----------------*/
 /*============================================================================================================================*/
+
 void TIMERs_Set_Counter(TIMx_n *TIMx , DIRx Copy_DIR , CNS_MODE Copy_Mode , uint32_t Copy_PSC , uint32_t Copy_ARR ){
 
     /*---------- DISABLE the counter  ----------*/ 
@@ -115,7 +116,7 @@ void TIMERs_InputCaptureInit(TIMx_n *TIMx,T_CH Copy_CH,C_PSC Copy_psc,T_Edge Cop
             /*----- Set CC1S to be i/p -----*/
             TIMx->REG_CCMR1|= (0b01<<0);
             /*----- Confgr the filer -----*/
-            TIMx->REG_CCMR1 &=~(0b0000<<4);
+            TIMx->REG_CCMR1 &=~(0b1111<<4);
             TIMx->REG_CCMR1|=(0b0011<<4);
             /*----- Confgr the prescaler -----*/
             TIMx->REG_CCMR1 &= ~(3 << 2);
@@ -126,7 +127,7 @@ void TIMERs_InputCaptureInit(TIMx_n *TIMx,T_CH Copy_CH,C_PSC Copy_psc,T_Edge Cop
             /*----- Set CC2S to be i/p -----*/
             TIMx->REG_CCMR1|= (0b01<<8);
             /*----- Confgr the filer -----*/
-            TIMx->REG_CCMR1 &=~(0b0000<<12);            
+            TIMx->REG_CCMR1 &=~(0b1111<<12);            
             TIMx->REG_CCMR1|=(0b0011<<12);
             /*----- Confgr the prescaler -----*/
             TIMx->REG_CCMR1 &= ~(3 << 10);
@@ -138,7 +139,7 @@ void TIMERs_InputCaptureInit(TIMx_n *TIMx,T_CH Copy_CH,C_PSC Copy_psc,T_Edge Cop
             /*----- Set CC3S to be i/p -----*/
             TIMx->REG_CCMR2|= (0b01<<0);
             /*----- Confgr the filer -----*/
-            TIMx->REG_CCMR2 &=~(0b0000<<4);
+            TIMx->REG_CCMR2 &=~(0b1111<<4);
             TIMx->REG_CCMR2|=(0b0011<<4);
             /*----- Confgr the prescaler -----*/
             TIMx->REG_CCMR2 &= ~(3 << 2);
@@ -149,7 +150,7 @@ void TIMERs_InputCaptureInit(TIMx_n *TIMx,T_CH Copy_CH,C_PSC Copy_psc,T_Edge Cop
             /*----- Set CC4S to be i/p -----*/
             TIMx->REG_CCMR2|= (0b01<<8);
             /*----- Confgr the filer -----*/
-            TIMx->REG_CCMR2 &=~(0b0000<<12);
+            TIMx->REG_CCMR2 &=~(0b1111<<12);
             TIMx->REG_CCMR2|=(0b0011<<12);
             /*----- Confgr the prescaler -----*/
             TIMx->REG_CCMR2 &= ~(3 << 10);
@@ -189,6 +190,7 @@ uint32_t TIMERs_IC_GetValue(TIMx_n *TIMx,T_CH Copy_CH){
 }
 
 /*========= TIMERs Output Compare mode initialization ========*/
+
 void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR ){
     
     uint8_t CCER_E[4] = {0,4,8,12};
@@ -197,7 +199,6 @@ void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Statu
     /*----- ARR value -----*/
     TIMx->REG_ARR= Copy_ARR;
     /*----- Choose of the preload -----*/
-    TIMx->REG_CCMR1 &= ~(1 << 3);
     TIMx->REG_CR1|=(Copy_PRE<<7);
     /*---------- Disable Output Compare --------*/    
     CLEAR_BIT(TIMx->REG_CCER,CCER_E[Copy_CH]);
@@ -211,11 +212,11 @@ void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Statu
             /*----- Confgr status of compare -----*/
             TIMx->REG_CCMR1&= ~(7 << 4);
             TIMx->REG_CCMR1|= (Copy_Status<<4);
-            /*---- Confgr preload----*/
+            CLEAR_BIT(TIMx->REG_CCMR1,3);
             TIMx->REG_CCMR1|= (Copy_PRE<<3);
             /*---- Value of CCR ----*/
             TIMx->REG_CCR1= Copy_CCR;
-
+ 
         break;
         case CH2 :
             /*----- Clear CC2S -----*/        
@@ -226,6 +227,7 @@ void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Statu
             TIMx->REG_CCMR1 &= ~(7 << 12);
             TIMx->REG_CCMR1|= (Copy_Status<<12);
             /*---- Confgr preload----*/
+            CLEAR_BIT(TIMx->REG_CCMR1,11);
             TIMx->REG_CCMR1|= (Copy_PRE<<11);
             /*---- Value of CCR ----*/
             TIMx->REG_CCR2= Copy_CCR;                                         
@@ -239,6 +241,7 @@ void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Statu
             TIMx->REG_CCMR2&= ~(7 << 4);
             TIMx->REG_CCMR2|= (Copy_Status<<4);            
             /*---- Confgr preload----*/
+            CLEAR_BIT(TIMx->REG_CCMR2,3);
             TIMx->REG_CCMR2|= (Copy_PRE<<3);
             /*---- Value of CCR ----*/
             TIMx->REG_CCR3= Copy_CCR; 
@@ -252,12 +255,15 @@ void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Statu
             TIMx->REG_CCMR2&= ~(7 << 12);
             TIMx->REG_CCMR2|= (Copy_Status<<12);   
             /*---- Confgr preload----*/
+            CLEAR_BIT(TIMx->REG_CCMR2,11);
             TIMx->REG_CCMR2|= (Copy_PRE<<11);
             /*---- Value of CCR ----*/
             TIMx->REG_CCR4= Copy_CCR;                                
         break;
         default: 
-        break;            
+        break;      
+        
+    
     }  
 
     /*----- Activation of the Compare & Edging of the signal ------- */   
@@ -270,5 +276,71 @@ void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Statu
     }
     /*---------- Enable OUTPUT Compare --------*/
     SET_BIT(TIMx->REG_CCER,CCER_E[Copy_CH]);
+    /*---- Set Main output enable ----*/
+    SET_BIT(TIMx->REG_BDTR, 15);  
 }
 
+/*======================================== PWM Mode ========================================*/
+/*================================== INPUT MODE Functions =================================*/
+
+/*========= TIMERs Input PWM mode  ========*/
+
+/*  ..... There are EQUs for timming in i/p_pwm.....
+
+Period = CCR1
+Ton    = CCR2
+
+Frequency = Timer_CLK / Period
+Duty      = (Ton * 100.0) / Period
+
+....................................................
+*/
+
+void TIMERs_InputPWM(TIMx_n *TIMx,T_CH Copy_CH1,T_CH Copy_CH2,C_PSC Copy_psc){
+    /*----------- First Input Capture -----------*/
+    TIMERs_InputCaptureInit(TIMx,Copy_CH1,Copy_psc,RISING_EDGE);
+    /*----------- First Input Capture -----------*/
+    TIMERs_InputCaptureInit(TIMx,Copy_CH2,Copy_psc,FALLING_EDGE);
+
+    /*---- Set TI1FP1 FOR one ----*/
+    TIMx->REG_SMCR &=~(0b111<<4);
+    TIMx->REG_SMCR |= (0b101<<4);
+    /*---- Set SLAVE MODE for second  ----*/
+    TIMx->REG_SMCR &=~(0b111<<0);
+    TIMx->REG_SMCR |= (0b100<<0);
+    
+}
+
+/*========= Read Input PWM mode values ========*/
+
+PWM_RESULTS TIMERs_ReadPWM(TIMx_n *TIMx,C_PSC Copy_psc){
+    PWM_RESULTS Results;
+
+    uint32_t PERIOD = TIMx->REG_CCR1;
+    uint32_t TON    = TIMx->REG_CCR2;
+
+    if(PERIOD == 0 ){
+        Results.FREQ = 0;
+        Results.DUTY = 0;
+        return Results;        
+    }
+    
+    Results.FREQ = (((f32)TIM_CLK)/((Copy_psc + 1) * PERIOD));
+    Results.DUTY = (((f32)TON * 100.0) / (PERIOD));
+
+    return Results;
+
+
+}
+
+/*================================== OUTPUT MODE Functions =================================*/
+
+void TIMERs_OutputPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge, DIRx Copy_DIR , CNS_MODE Copy_Mode ,C_PSC Copy_psc,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR){
+
+
+    TIMERs_OutputCompareMode(TIMx,Copy_CH,Copy_Status,Copy_Edge,Copy_PRE,Copy_ARR, Copy_CCR);
+
+    TIMERs_Set_Counter(TIMx,Copy_DIR ,Copy_Mode ,Copy_psc ,Copy_ARR);
+
+    SET_BIT(TIMx->REG_EGR,0);
+}

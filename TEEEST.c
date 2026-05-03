@@ -24,7 +24,7 @@
 
 
 /*================ LED (PA8 - TIM1_CH1) ================*/
-void LED_ACCESS(uint8_t port, uint8_t pin)
+void LED_ACCESS1(uint8_t port, uint8_t pin)
 {
     GPIO_Init_Def led;
 
@@ -39,6 +39,14 @@ void LED_ACCESS(uint8_t port, uint8_t pin)
 }
 
 
+void LED_ACCESS(uint8_t Copy_port,uint8_t Copy_pin){
+	GPIO_Init_Def LED  ;
+	LED.PIN = Copy_pin;
+	LED.MODE = OUTPUT;
+	LED.SPEED = V_HIGH_SPEED;
+    LED.PULL  = NO_PULL;
+	GPIO_Init(Copy_port,&LED);
+}
 
 void BUTTON_ACCESS(uint8_t Copy_port,uint8_t Copy_pin)
 {
@@ -49,7 +57,22 @@ void BUTTON_ACCESS(uint8_t Copy_port,uint8_t Copy_pin)
 	GPIO_Init(Copy_port,&BUTTON);
 }
 
+void TIMERs_Delay_ms(TIMx_n *TIMx, uint32_t Copy_ms)
+{
+    /*--- PSC يخلي كل tick = 1ms ---*/
+    uint32_t PSC = (TIM_CLK / 1000) - 1;   // 24999 عند 25MHz
 
+    TIMERs_Set_Counter(TIMx, DOWN, Edge_aligned, PSC, Copy_ms - 1);
+
+    /*--- استنى لحد ما يحصل overflow ---*/
+    while(GET_BIT(TIMx->REG_SR, 0) == 0);
+
+    /*--- Clear الـ flag ---*/
+    CLEAR_BIT(TIMx->REG_SR, 0);
+
+    /*--- وقف العداد ---*/
+    CLEAR_BIT(TIMx->REG_CR1, 0);
+}
 
 /*================ MAIN =================*/
 int main(void)
@@ -59,12 +82,14 @@ int main(void)
 
     /* Init Timer */
     TIMERs_VoidInit(TIMER1);
+    TIMERs_VoidInit(TIMER2);
+    LED_ACCESS(GPIOC,PIN13);
 
     /* GPIO PA8 -> TIM1_CH1 */
-    LED_ACCESS(GPIOA, PIN8);
+    LED_ACCESS1(GPIOA, PIN8);
 
     /* PWM Setup */
-    TIMERs_OutputCompareMode(
+    /*TIMERs_OutputCompareMode(
         TIM1,
         CH1,
         PWM_MODE_1,
@@ -72,28 +97,29 @@ int main(void)
         PR_EN,
         999,     // ARR (1k resolution)
         0        // CCR start (0% duty)
-    );
+    );*/
 
-    /* Enable TIM1 main output */
-    SET_BIT(TIM1->REG_BDTR, 15); // MOE
 
-    /* Start timer */
-    SET_BIT(TIM1->REG_CR1, 0);   // CEN
+    /*TIMERs_OutputPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge, DIRx Copy_DIR , CNS_MODE Copy_Mode ,C_PSC Copy_psc,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR)*/
+    TIMERs_OutputPWM(
+    		TIM1,
+			CH1,
+			PWM_MODE_1,
+			RISING_EDGE,
+			UP,
+			Edge_aligned,
+			NONE,
+			PR_EN,
+			19999,
+			0
+        );
+
+
 
     while (1)
     {
-        /* Fade IN */
-        for (int i = 0; i <= 2999; i += 5)
-        {
-            TIM1->REG_CCR1 = i;
-            for (volatile int d = 0; d < 20000; d++);
-        }
 
-        /* Fade OUT */
-        for (int i = 2999; i >= 0; i -= 5)
-        {
-            TIM1->REG_CCR1 = i;
-            for (volatile int d = 0; d < 20000; d++);
-        }
+    	GPIO_VoidTogglePin(GPIOC, PIN13);
+    	TIMERs_Delay_ms(TIM2, 1000);
     }
 }

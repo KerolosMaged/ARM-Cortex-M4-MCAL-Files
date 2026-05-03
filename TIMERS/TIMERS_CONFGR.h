@@ -10,6 +10,10 @@ Github      : https://github.com/KerolosMaged
 #ifndef TIMERS_CONFGR_H
 #define TIMERS_CONFGR_H
 
+
+#define    TIM_CLK  25000000
+
+
 /*----------- Timers alias ----------*/
 
 typedef enum {
@@ -93,5 +97,13 @@ typedef enum {
 typedef enum {
     PR_DIS=0 , PR_EN=1,
 }T_PR;
+
+
+typedef struct {
+
+    f32 FREQ;
+    f32 DUTY;
+
+}PWM_RESULTS;
 
 #endif

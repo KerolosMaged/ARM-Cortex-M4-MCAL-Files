@@ -28,8 +28,31 @@ uint32_t TIMERs_IC_GetValue(TIMx_n *TIMx,T_CH Copy_CH);
 /*========= TIMERs Output Compare mode initialization ========*/
 void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR );
 
+/*======================================== PWM Mode ========================================*/
+/*================================== INPUT MODE Functions =================================*/
 
+/*========= TIMERs Input PWM mode  ========*/
 
+/*  ..... There are EQUs for timming in i/p_pwm.....
+
+Period = CCR1
+Ton    = CCR2
+
+Frequency = Timer_CLK / Period
+Duty      = (Ton * 100.0) / Period
+
+....................................................
+*/
+
+void TIMERs_InputPWM(TIMx_n *TIMx,T_CH Copy_CH1,T_CH Copy_CH2,C_PSC Copy_psc);
+
+/*========= Read Input PWM mode values ========*/
+
+PWM_RESULTS TIMERs_ReadPWM(TIMx_n *TIMx,C_PSC Copy_psc);
+
+/*================================== OUTPUT MODE Functions =================================*/
+
+void TIMERs_OutputPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge, DIRx Copy_DIR , CNS_MODE Copy_Mode ,C_PSC Copy_psc,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR);
 
 
 #endif
