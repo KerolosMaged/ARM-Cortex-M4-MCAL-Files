@@ -17,8 +17,8 @@ Github      : https://github.com/KerolosMaged
 #include "GPIO_INTERFACE.h"
 #include "GPIO_PRIVATE.h"
 
-void GPIO_Init( uint8_t GPIOx , GPIO_Init_Def *CFG ) {
-    uint8_t pin = CFG->PIN ;
+void GPIO_Init( uint32_t GPIOx , GPIO_Init_Def *CFG ) {
+    uint32_t pin = CFG->PIN ;
     switch(GPIOx)
     {   
         case GPIOA   :  
@@ -131,10 +131,10 @@ void GPIO_Init( uint8_t GPIOx , GPIO_Init_Def *CFG ) {
 }
 
 
-void GPIO_VoidWritePin( uint32_t GPIOx, uint8_t PINx, uint8_t STATYUS){
+void GPIO_VoidWritePin( uint32_t GPIOx, uint8_t PINx, uint8_t STATUS){
 
     
-    switch(STATYUS) 
+    switch(STATUS)
     {
         case HIGH :
             switch (GPIOx)

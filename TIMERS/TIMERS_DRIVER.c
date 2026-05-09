@@ -95,7 +95,9 @@ void TIMERs_Set_Counter(TIMx_n *TIMx , DIRx Copy_DIR , CNS_MODE Copy_Mode , uint
 }
 
 
-/*========================================  compare / Capture Mode ========================================*/
+/*============================================================================================================*/
+/*======================================== [ compare / Capture Mode ] ========================================*/
+/*============================================================================================================*/
 
 
 /*========= TIMERs Input Capture mode initialization ========*/
@@ -277,11 +279,21 @@ void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Statu
     /*---------- Enable OUTPUT Compare --------*/
     SET_BIT(TIMx->REG_CCER,CCER_E[Copy_CH]);
     /*---- Set Main output enable ----*/
-    SET_BIT(TIMx->REG_BDTR, 15);  
+    if (TIMx == TIM1)
+    {
+        SET_BIT(TIMx->REG_BDTR, 15);
+    }  
 }
 
-/*======================================== PWM Mode ========================================*/
-/*================================== INPUT MODE Functions =================================*/
+
+/*==============================================================================================*/
+/*======================================== [ PWM Mode ] ========================================*/
+/*==============================================================================================*/
+
+
+/*-----------------------------------------------------------------------------------*/
+/*---------------------------- INPUT MODE Functions ---------------------------------*/
+/*-----------------------------------------------------------------------------------*/
 
 /*========= TIMERs Input PWM mode  ========*/
 
@@ -333,14 +345,99 @@ PWM_RESULTS TIMERs_ReadPWM(TIMx_n *TIMx,C_PSC Copy_psc){
 
 }
 
-/*================================== OUTPUT MODE Functions =================================*/
+/*------------------------------------------------------------------------------*/
+/*--------------------------- OUTPUT MODE Functions ----------------------------*/
+/*------------------------------------------------------------------------------*/
 
-void TIMERs_OutputPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge, DIRx Copy_DIR , CNS_MODE Copy_Mode ,C_PSC Copy_psc,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR){
+/* 
+....... There are EQUs for timming in O /p_pwm .....
+
+Frequency = ARR
+Duty      = CCR
+
+Duty % = CCR/ARR *100
+Tperiod = (ARR+1)*Tclk
+Ton = CCR * Tclk
+Toff = Tperiod - Ton
+
+....................................................
+*/
+
+/*------------------ Advanced Timer Output PWM Setting ------------------*/
+
+void TIMERs_SetPWM_AD(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge, DIRx Copy_DIR , CNS_MODE Copy_Mode ,C_PSC Copy_psc,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR){
 
 
     TIMERs_OutputCompareMode(TIMx,Copy_CH,Copy_Status,Copy_Edge,Copy_PRE,Copy_ARR, Copy_CCR);
+
+    CLEAR_BIT(TIMx->REG_CR1,0);
 
     TIMERs_Set_Counter(TIMx,Copy_DIR ,Copy_Mode ,Copy_psc ,Copy_ARR);
 
     SET_BIT(TIMx->REG_EGR,0);
 }
+
+/*------------------ Set Freq ------------------*/
+
+void TIMERs_PWM_SetFreq(TIMx_n *TIMx,uint32_t Copy_Freq){
+
+    if(Copy_Freq == 0)
+    {
+         return;
+    }
+    uint32_t ARR_Val = ((TIM_CLK / (( TIMx->REG_PSC + 1) * Copy_Freq ))-1);
+    
+    if(ARR_Val > 0xFFFF) 
+    {
+        ARR_Val = 0xFFFF;
+    }
+    
+    TIMx->REG_ARR = ARR_Val;
+    SET_BIT(TIMx->REG_EGR,0);
+}
+
+/*------------------ Set Duty ------------------*/
+
+void TIMERs_PWM_SetDuty(TIMx_n *TIMx,T_CH Copy_CH,uint32_t Copy_Duty){
+    
+    uint32_t CCR_n = (((TIMx->REG_ARR + 1) * Copy_Duty) / 100 );
+
+    if(CCR_n > TIMx->REG_ARR)
+    { 
+        CCR_n = TIMx->REG_ARR;
+    }
+    switch(Copy_CH)
+    {
+        case CH1:  TIMx->REG_CCR1 = CCR_n ;   break;
+        case CH2:  TIMx->REG_CCR2 = CCR_n ;   break;
+        case CH3:  TIMx->REG_CCR3 = CCR_n ;   break;
+        case CH4:  TIMx->REG_CCR4 = CCR_n ;   break;
+    }
+
+}
+
+/*------------------ defualt Timer Output PWM Setting ------------------*/
+
+
+void TIMERs_SetPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status){
+
+
+	TIMERs_SetPWM_AD(
+    		TIMx,
+			Copy_CH,
+			Copy_Status,
+			RISING_EDGE,
+			UP,
+			Edge_aligned,
+			24,
+			PR_EN,
+			0,
+			0
+        );
+
+    
+}
+
+
+
+

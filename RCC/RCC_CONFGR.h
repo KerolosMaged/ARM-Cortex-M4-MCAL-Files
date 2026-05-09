@@ -19,18 +19,13 @@ Github      : https://github.com/KerolosMaged
 
 /*============= Types of CLOCK Sourses ============*/
 
-/*------------ Primary Sources --------------*/
-
-#define     RCC_HSE         0
-#define     RCC_HSI         1
-#define     RCC_PLL         2
-/*------------ Secondary Sources -----------*/
-#define     RCC_LSE         3
-#define     RCC_LSI         4
-
-/*------------ RCC CLOCK Selection --------------*/
-
-#define    RCC_CLK          RCC_HSE
+typedef enum {
+     RCC_HSE,   
+     RCC_HSI,  
+     RCC_PLL, 
+     RCC_LSE,  
+     RCC_LSI 
+}RCC_CLK;          
 
 /*=================================================*/
 

@@ -17,14 +17,14 @@ Github      : https://github.com/KerolosMaged
 /*----------- Timers alias ----------*/
 
 typedef enum {
-    TIMER1= 0,
-    TIMER2= 1,
-    TIMER3= 2,
-    TIMER4= 3,
-    TIMER5= 4,
-    TIMER9= 5,
-    TIMER10 = 6,
-    TIMER11 = 7,
+    TIMER1,
+    TIMER2,
+    TIMER3,
+    TIMER4,
+    TIMER5,
+    TIMER9,
+    TIMER10,
+    TIMER11,
 
 }TIMX_t;
 

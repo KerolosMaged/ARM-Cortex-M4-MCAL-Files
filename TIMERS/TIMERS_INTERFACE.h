@@ -12,12 +12,19 @@ Github      : https://github.com/KerolosMaged
 #include "TIMERS_CONFGR.h"
 #include "TIMERS_PRIVATE.h"
 
-/*========= Timers initialization ==========*/
+
+
+/*============================ Timers initialization ===========================*/
 void TIMERs_VoidInit(TIMX_t TIMx);
-/*========= Timers' counter  setting =========*/
+
+/*========================= Timer counter setting ============================*/
 void TIMERs_Set_Counter(TIMx_n *TIMx , DIRx Copy_DIR , CNS_MODE Copy_Mode , uint32_t Copy_PSC , uint32_t Copy_ARR );
 
-/*========================================  compare / Capture Mode ========================================*/
+
+
+/*============================================================================================================*/
+/*======================================== [ compare / Capture Mode ] ========================================*/
+/*============================================================================================================*/
 
 /*========= TIMERs Input Capture mode initialization ========*/
 void TIMERs_InputCaptureInit(TIMx_n *TIMx,T_CH Copy_CH,C_PSC Copy_psc,T_Edge Copy_Edge);
@@ -28,12 +35,22 @@ uint32_t TIMERs_IC_GetValue(TIMx_n *TIMx,T_CH Copy_CH);
 /*========= TIMERs Output Compare mode initialization ========*/
 void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR );
 
-/*======================================== PWM Mode ========================================*/
-/*================================== INPUT MODE Functions =================================*/
+
+
+/*==============================================================================================*/
+/*======================================== [ PWM Mode ] ========================================*/
+/*==============================================================================================*/
+
+
+
+/*-----------------------------------------------------------------------------------*/
+/*---------------------------- INPUT MODE Functions ---------------------------------*/
+/*-----------------------------------------------------------------------------------*/
 
 /*========= TIMERs Input PWM mode  ========*/
 
-/*  ..... There are EQUs for timming in i/p_pwm.....
+/* 
+....... There are EQUs for timming in i/p_pwm .....
 
 Period = CCR1
 Ton    = CCR2
@@ -46,13 +63,49 @@ Duty      = (Ton * 100.0) / Period
 
 void TIMERs_InputPWM(TIMx_n *TIMx,T_CH Copy_CH1,T_CH Copy_CH2,C_PSC Copy_psc);
 
-/*========= Read Input PWM mode values ========*/
+/*-------------------- Read Input PWM mode values --------------------*/
 
 PWM_RESULTS TIMERs_ReadPWM(TIMx_n *TIMx,C_PSC Copy_psc);
 
-/*================================== OUTPUT MODE Functions =================================*/
+/*------------------------------------------------------------------------------*/
+/*--------------------------- OUTPUT MODE Functions ----------------------------*/
+/*------------------------------------------------------------------------------*/
 
-void TIMERs_OutputPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge, DIRx Copy_DIR , CNS_MODE Copy_Mode ,C_PSC Copy_psc,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR);
+/* 
+....... There are EQUs for timming in O /p_pwm .....
+
+Frequency = ARR
+Duty      = CCR
+
+Duty % = CCR/ARR *100
+Tperiod = (ARR+1)*Tclk
+Ton = CCR * Tclk
+Toff = Tperiod - Ton
+
+....................................................
+*/
+
+/*------------------ Advanced Timer Output PWM Setting ------------------*/
+
+void TIMERs_SetPWM_AD(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge, DIRx Copy_DIR , CNS_MODE Copy_Mode ,C_PSC Copy_psc,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR);
+
+/*------------------ Set Freq ------------------*/
+
+void TIMERs_PWM_SetFreq(TIMx_n *TIMx,uint32_t Copy_Freq);
+
+/*------------------ Set Duty ------------------*/
+
+void TIMERs_PWM_SetDuty(TIMx_n *TIMx,T_CH Copy_CH,uint32_t Copy_Duty);
+
+/*------------------ defualt Timer Output PWM Setting ------------------*/
+
+void TIMERs_SetPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status);
+
+/*==========================================================================================*/
+
+
+
+
 
 
 #endif

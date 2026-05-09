@@ -9,9 +9,9 @@ Github      : https://github.com/KerolosMaged
 #define RCC_INTERFACE_H
 
 #include "../LIB/STD_TYPES_MATH.h"
+#include "RCC_CONFGR.h"
 
-
-void RCC_VoidSysInit( void );
+void RCC_VoidSysInit( RCC_CLK Copy_Clk);
 
 void RCC_VoidStatusPeripheral_CLK(uint8_t BUS ,uint8_t Peripheral ,uint8_t Status);
 

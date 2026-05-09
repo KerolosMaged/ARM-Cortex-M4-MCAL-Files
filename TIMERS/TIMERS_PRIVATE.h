@@ -14,6 +14,7 @@ Github      : https://github.com/KerolosMaged
 /*********** Registers of ( TIM1 ) *************/
 
 typedef struct {
+
     volatile uint32_t    REG_CR1;
     volatile uint32_t    REG_CR2;
     volatile uint32_t    REG_SMCR;
@@ -41,10 +42,10 @@ typedef struct {
 
 /********** Registers of ( TIM2 to TIM5 ) *************/
 
-#define    TIM2 ((volatile TIMx_n*)(0x40000000)) 
-#define    TIM3 ((volatile TIMx_n*)(0x40000400)) 
-#define    TIM4 ((volatile TIMx_n*)(0x40000800)) 
-#define    TIM5 ((volatile TIMx_n*)(0x40000C00)) 
+#define    TIM2          (( volatile TIMx_n* )(0x40000000)) 
+#define    TIM3          (( volatile TIMx_n* )(0x40000400)) 
+#define    TIM4          (( volatile TIMx_n* )(0x40000800)) 
+#define    TIM5          (( volatile TIMx_n* )(0x40000C00)) 
 
 #define    TIM2_OR      *((volatile uint32_t*)(0x40000050)) 
 #define    TIM5_OR      *((volatile uint32_t*)(0x40000C50)) 
@@ -52,9 +53,9 @@ typedef struct {
 /********** Registers of ( TIM9 to TIM11) *************/
 
 
-#define    TIM9  ((volatile TIMx_n*)( 0x40014000 )) 
-#define    TIM10 ((volatile TIMx_n*)( 0x40014400 )) 
-#define    TIM11 ((volatile TIMx_n*)( 0x40014800 )) 
+#define    TIM9          (( volatile TIMx_n* )(0x40014000)) 
+#define    TIM10         (( volatile TIMx_n* )(0x40014400)) 
+#define    TIM11         (( volatile TIMx_n* )(0x40014800)) 
 
 
 /**********************************************/

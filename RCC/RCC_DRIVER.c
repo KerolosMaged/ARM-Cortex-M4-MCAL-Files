@@ -15,9 +15,10 @@ Github      : https://github.com/KerolosMaged
 
 
 
-void RCC_VoidSysInit( void ){
-    
-    #if   (RCC_CLK==RCC_HSE)            // HSE selection
+void RCC_VoidSysInit( RCC_CLK Copy_Clk){
+
+    switch  (Copy_Clk){
+        case RCC_HSE :            // HSE selection
 
             CLEAR_BIT(RCC_CR, HSEBYP);
             SET_BIT(RCC_CR, HSEON);
@@ -26,8 +27,8 @@ void RCC_VoidSysInit( void ){
 
             SET_BIT(RCC_CFGR,SW_0);        
             CLEAR_BIT(RCC_CFGR, SW_1);
-
-    #elif (RCC_CLK==RCC_HSI)            // HSI Selection 
+        break;
+        case RCC_HSI:            // HSI Selection 
 
             SET_BIT(RCC_CR, HSION);
 
@@ -35,30 +36,45 @@ void RCC_VoidSysInit( void ){
             
             CLEAR_BIT(RCC_CFGR,SW_0);      
             CLEAR_BIT(RCC_CFGR, SW_1); 
-
-    #elif (RCC_CLK==RCC_PLL)             // PLL Selection
-            /*------ HSE ENABLE*/
+        break;
+        case RCC_PLL:             // PLL Selection
+            /*------ Enable HSE ------*/
             SET_BIT(RCC_CR , HSEON);
             while(GET_BIT(RCC_CR , HSERDY)==0);
-            /*----- confgr OF PLL------*/            
+            
+            /*------ Configure PLL ------*/
             RCC_PLLCFGR = 0;
+            
             RCC_PLLCFGR |= (PLLM << 0);
             RCC_PLLCFGR |= (PLLN << 6);
-            RCC_PLLCFGR |= (0 << 16);
-            SET_BIT(RCC_PLLCFGR , PLLSRC);
-            RCC_PLLCFGR |= (PLLQ << 24);
-
-            SET_BIT(RCC_CR, PLL_ON);
-
-            while(GET_BIT(RCC_CR , PLL_RDY)==0);               
             
-            CLEAR_BIT(RCC_CFGR,SW_0);     
-            SET_BIT(RCC_CFGR, SW_1);      
+            /* PLLP = 2 */
+            RCC_PLLCFGR &= ~(0b11 << 16);
+            
+            /* HSE as PLL source */
+            SET_BIT(RCC_PLLCFGR , PLLSRC);
+            
+            RCC_PLLCFGR |= (PLLQ << 24);
+            
+            /*------ Enable PLL ------*/
+            SET_BIT(RCC_CR, PLL_ON);
+            
+            while(GET_BIT(RCC_CR , PLL_RDY)==0);
+            
+            /*------ Select PLL as SYSCLK ------*/
+            CLEAR_BIT(RCC_CFGR,SW_0);
+            SET_BIT(RCC_CFGR, SW_1);
+            
+            /*------ Wait until PLL selected ------*/
+            while((RCC_CFGR & (0b11 << 2)) != (0b10 << 2));   
+        break;
 
-    #endif
+        default:
+        break;
 
 
 
+    }
 
 }
 

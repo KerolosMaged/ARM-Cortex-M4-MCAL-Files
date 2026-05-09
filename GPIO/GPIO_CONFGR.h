@@ -23,7 +23,7 @@ Github      : https://github.com/KerolosMaged
 
 /*=============== OTYPE ==============*/
 
-#define     OUTPUT_PUPD         0
+#define     OUTPUT_PP         0
 #define     OUTPUT_OPEN_DRAIN   1
 
 /*=============== SPEED ==============*/
