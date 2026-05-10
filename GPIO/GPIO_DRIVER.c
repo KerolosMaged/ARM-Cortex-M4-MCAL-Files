@@ -162,7 +162,7 @@ void GPIO_VoidWritePin( uint32_t GPIOx, uint8_t PINx, uint8_t STATUS){
 
 uint8_t GPIO_uint8_tReadPin( uint32_t GPIOx, uint8_t PINx){
         uint8_t VALUE = 0 ;
-        switch (GPIOx)
+                switch (GPIOx)
         {
             case GPIOA :    VALUE = GET_BIT(GPIOA_IDR,PINx);       break;
             case GPIOB :    VALUE = GET_BIT(GPIOB_IDR,PINx);       break;

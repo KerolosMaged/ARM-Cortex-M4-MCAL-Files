@@ -367,14 +367,22 @@ Toff = Tperiod - Ton
 
 void TIMERs_SetPWM_AD(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge, DIRx Copy_DIR , CNS_MODE Copy_Mode ,C_PSC Copy_psc,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR){
 
-
-    TIMERs_OutputCompareMode(TIMx,Copy_CH,Copy_Status,Copy_Edge,Copy_PRE,Copy_ARR, Copy_CCR);
-
     CLEAR_BIT(TIMx->REG_CR1,0);
+    TIMx->REG_PSC = Copy_psc;
 
-    TIMERs_Set_Counter(TIMx,Copy_DIR ,Copy_Mode ,Copy_psc ,Copy_ARR);
+    if(Copy_DIR == UP)   CLEAR_BIT(TIMx->REG_CR1, 4);
+    else                 SET_BIT(TIMx->REG_CR1, 4);
 
-    SET_BIT(TIMx->REG_EGR,0);
+    CLEAR_BIT(TIMx->REG_CR1, 5); 
+    CLEAR_BIT(TIMx->REG_CR1, 6);
+
+    SET_BIT(TIMx->REG_CR1, 7);
+
+    TIMERs_OutputCompareMode(TIMx, Copy_CH, Copy_Status, Copy_Edge, Copy_PRE, Copy_ARR, Copy_CCR);
+
+    SET_BIT(TIMx->REG_EGR, 0);
+    CLEAR_BIT(TIMx->REG_SR, 0);
+
 }
 
 /*------------------ Set Freq ------------------*/
@@ -434,8 +442,16 @@ void TIMERs_SetPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status){
 			0,
 			0
         );
-
+    SET_BIT(TIMx->REG_CR1, 0);
     
+    /*
+     * for servo motor
+     * freq = 44
+     * 0 = 3%
+     * 90 = 7%
+     * 180 = 11%
+     *
+     */
 }
 
 
