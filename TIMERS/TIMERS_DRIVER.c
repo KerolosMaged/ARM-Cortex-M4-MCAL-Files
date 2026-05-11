@@ -82,6 +82,8 @@ void TIMERs_Set_Counter(TIMx_n *TIMx , DIRx Copy_DIR , CNS_MODE Copy_Mode , uint
         SET_BIT(TIMx->REG_CR1,7);
     /*--------- Reset counter ---------*/
         TIMx->REG_CNT = 0;
+        /*--------- Reset FLAG ---------*/
+        CLEAR_BIT(TIMx->REG_SR, 0);
     /*----------- Update --------------*/
         SET_BIT(TIMx->REG_EGR,0);   
     /*--- Clear the initial UG flag before entering the user wait loop ---*/
@@ -94,7 +96,34 @@ void TIMERs_Set_Counter(TIMx_n *TIMx , DIRx Copy_DIR , CNS_MODE Copy_Mode , uint
 
 }
 
+/*================== Delay mille seconed ===========*/
 
+
+void TIMERs_VoidDelay_ms(TIMx_n *TIMx, uint32_t Copy_ms)
+{
+    uint16_t PSC = (TIM_CLK / 1000) - 1;  // 1 tick = 1ms
+    uint16_t ARR = Copy_ms - 1;
+
+    TIMERs_Set_Counter(TIMx,UP,Edge_aligned, PSC, ARR);
+
+    while(!(TIMx->REG_SR & (1 << 0)));
+    CLEAR_BIT(TIMx->REG_CR1, 0);
+
+}
+
+/*================== Delay micro seconed ===========*/
+
+void TIMERs_VoidDelay_us(TIMx_n *TIMx, uint32_t Copy_us)
+{
+    uint16_t PSC = (TIM_CLK) - 1;  // 1 tick = 1ms
+    uint16_t ARR = Copy_us - 1;
+
+    TIMERs_Set_Counter(TIMx,UP,Edge_aligned, PSC, ARR);
+
+    while(!(TIMx->REG_SR & (1 << 0)));
+    CLEAR_BIT(TIMx->REG_CR1, 0);
+
+}
 /*============================================================================================================*/
 /*======================================== [ compare / Capture Mode ] ========================================*/
 /*============================================================================================================*/

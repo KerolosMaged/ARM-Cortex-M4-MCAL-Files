@@ -20,7 +20,13 @@ void TIMERs_VoidInit(TIMX_t TIMx);
 /*========================= Timer counter setting ============================*/
 void TIMERs_Set_Counter(TIMx_n *TIMx , DIRx Copy_DIR , CNS_MODE Copy_Mode , uint32_t Copy_PSC , uint32_t Copy_ARR );
 
+/*================== Delay mille seconed ===========*/
 
+void TIMERs_VoidDelay_ms(TIMx_n *TIMx, uint32_t Copy_ms);
+
+/*================== Delay micro seconed ===========*/
+
+void TIMERs_VoidDelay_us(TIMx_n *TIMx, uint32_t Copy_us);
 
 /*============================================================================================================*/
 /*======================================== [ compare / Capture Mode ] ========================================*/

@@ -25,5 +25,19 @@ void IWDG_VoidRefresh(void);
 /*========================= WWDG =========================== */
 /*===========================================================*/
 
+/*------ Initialization the window WGD -------*/
+void WWDG_VoidInit(CK_CNT_PSC Copy_psc,uint8_t Copy_Window);
+
+/*---- Refresh the WWDG----*/
+void WWDG_VoidRefresh(uint8_t Copy_CNT);
+
+/*------- Enable Interrupt WWDG ------*/
+void WWDG_EnableEWI(void);
+
+/*------- Read Interrupt Flag ------*/
+uint8_t WWDG_GetResetFlag(void);
+
+/*------ Clear Interrupt Flag ----- */
+void WWDG_ClearResetFlag(void);
 
 #endif
