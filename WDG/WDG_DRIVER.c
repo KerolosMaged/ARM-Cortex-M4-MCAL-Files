@@ -17,3 +17,43 @@ Github      : https://github.com/KerolosMaged
 #include "WDG_INTERFACE.h"
 #include "WDG_PRIVATE.h"
 
+
+
+
+/*===========================================================*/
+/*========================= IWDG =========================== */
+/*===========================================================*/
+
+/*------ Initialization the Independent WGD -------*/
+void IWDG_VoidInit(void ){
+    /*--- PSC CHOOSE ---*/
+    IWDG_n PSC = PSC_256 ;
+    /*--- Unlock registers to write ---*/
+    IWDG->IWDG_KR = 0x5555 ; 
+    /*--- Prescaler ---*/
+    IWDG->IWDG_PR = PSC ;
+    /*--- value of counter ---*/
+    IWDG->IWDG_RLR = 0xFFF ;
+    /*--- check for values in RLR , PR*/
+    while(IWDG->SR != 0);
+    /*---- reload counter ----*/
+    IWDG->IWDG_KR = 0xAAAA ;
+    /*---- Starts count down */
+    IWDG->IWDG_KR = 0xCCCC ;
+
+
+}
+
+/*---- Refresh the IWDG----*/
+
+void IWDG_VoidRefresh(void){
+
+    IWDG->IWDG_KR = 0xAAAA;
+
+}
+
+
+
+/*===========================================================*/
+/*========================= WWDG =========================== */
+/*===========================================================*/

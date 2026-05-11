@@ -42,6 +42,9 @@ void LED_ACCESS1(uint8_t port, uint8_t pin)
     led.AFR   = 1;   // AF1 for TIM1
 
     GPIO_Init(port, &led);
+
+    //LED_ACCESS1(GPIOA, PIN8);
+
 }
 
 
@@ -53,6 +56,9 @@ void LED_ACCESS(uint8_t Copy_port,uint8_t Copy_pin){
 	LED.SPEED = LOW_SPEED;
     LED.PULL  = NO_PULL;
 	GPIO_Init(Copy_port,&LED);
+
+
+
 }
 
 void BUTTON_ACCESS(uint8_t Copy_port,uint8_t Copy_pin)
@@ -62,48 +68,85 @@ void BUTTON_ACCESS(uint8_t Copy_port,uint8_t Copy_pin)
 	BUTTON.PIN = Copy_pin;
 	BUTTON.PULL = PULL_DOWN;
 	GPIO_Init(Copy_port,&BUTTON);
+
+
+   // BUTTON_ACCESS(GPIOA, PIN11);
 }
 
+void TIMERs_VoidDelay_ms(TIMx_n *TIMx, uint32_t Copy_ms, uint32_t F_CLK_MHz)
+{
+    // PSC و ARR عشان نعمل 1ms لكل tick
+    TIMx->REG_PSC = (F_CLK_MHz * 1000) - 1;  // 1 tick = 1ms
+    TIMx->REG_ARR = Copy_ms - 1;
+    TIMx->REG_CNT = 0;
 
+    // Clear update flag
+    TIMx->REG_SR &= ~(1 << 0);
+
+    // Enable counter
+    TIMx->REG_CR1 |= (1 << 0);
+
+    // Wait until update flag (UIF)
+    while(!(TIMx->REG_SR & (1 << 0)));
+
+    // Stop counter
+    TIMx->REG_CR1 &= ~(1 << 0);
+
+    // IWDG refresh
+    //*(volatile uint32_t*)0x40003000 = 0xAAAA;
+}
 /*================ MAIN =================*/
 
 int main(void){
 
-    RCC_VoidSysInit(RCC_HSE);
+/*    RCC_VoidSysInit(RCC_HSE);
 
 
-    TIMERs_VoidInit(TIMER1);
-    TIMERs_VoidInit(TIMER3);
+    //TIMERs_VoidInit(TIMER1);
+    //TIMERs_VoidInit(TIMER3);
 
 
-    LED_ACCESS(GPIOB, PIN5);
-    BUTTON_ACCESS(GPIOA, PIN11);
-    LED_ACCESS1(GPIOA, PIN8);
+    LED_ACCESS(GPIOA, PIN3);
 
-    TIMERs_SetPWM(TIM1, CH1, PWM_MODE_1);
-    TIMERs_PWM_SetFreq(TIM1, 20000);
-    TIMERs_PWM_SetDuty(TIM1, CH1, 20);
 
-    TIMERs_InputCaptureInit(TIM3,CH1,24,RISING_EDGE);
 
-    uint32_t t_rise = 0, t_fall = 0 , echo_width = 0;
-    f32 distance_cm = 0;
-    distance_cm = echo_width / 58.0f;
+    //TIMERs_SetPWM(TIM1, CH1, PWM_MODE_1);
+    //TIMERs_PWM_SetFreq(TIM1, 20000);
+    //TIMERs_PWM_SetDuty(TIM1, CH1, 20);
 
-    while(1){
-    	   TIMERs_IC_SetEdge(TIM3, CH1, RISING_EDGE);
-    	    t_rise = TIMERs_IC_GetValue(TIM3, CH1);
 
-    	    TIMERs_IC_SetEdge(TIM3, CH1, FALLING_EDGE);
-    	    t_fall = TIMERs_IC_GetValue(TIM3, CH1);
-    	    if (t_fall >= t_rise)
-    	        echo_width = t_fall - t_rise;
-    	    else
-    	        echo_width = (0xFFFF - t_rise) + t_fall;
+    	GPIO_VoidWritePin(GPIOA, PIN3 ,HIGH);
+*/
+	// حط الكود ده في أول الـ main قبل أي حاجة
 
-    	uint32_t Echo = TIMERs_IC_GetValue(TIM3,CH1);
 
-    }
+
+
+	    // كل شوية اعمل refresh للـ IWDG
+	    // أو الأسهل — شغل الـ IWDG بنفسك بـ timeout كبير
+
+	    *(volatile uint32_t*)0x40003000 = 0x5555; // KR - unlock PR & RLR
+	    *(volatile uint32_t*)0x40003004 = 0x06;   // PR - prescaler /256
+	    *(volatile uint32_t*)0x40003008 = 0xFFF;  // RLR - max reload = ~32 ثانية
+	    *(volatile uint32_t*)0x40003000 = 0xAAAA; // KR - reload
+	    *(volatile uint32_t*)0x40003000 = 0xCCCC; // KR - start
+
+	    RCC_VoidSysInit(RCC_HSE);
+	    SysTick_Init();
+	    TIMERs_VoidInit(TIMER2);
+
+	    LED_ACCESS(GPIOA, PIN3);
+	    GPIO_VoidWritePin(GPIOA, PIN3, HIGH);
+
+	    while(1){
+	        GPIO_VoidWritePin(GPIOA, PIN3, HIGH);
+	        // TIM2, delay 1000ms, clock 16MHz
+	        TIMERs_VoidDelay_ms(TIM2, 5000, 25);
+	        GPIO_VoidWritePin(GPIOA, PIN3, LOW);
+	        // TIM2, delay 1000ms, clock 16MHz
+	        TIMERs_VoidDelay_ms(TIM2, 1000, 25);
+	        //*(volatile uint32_t*)0x40003000 = 0xAAAA; // IWDG refresh
+	    }
 
 
 }
