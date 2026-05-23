@@ -70,6 +70,14 @@ typedef enum {
     BOTH_EDGE   =3,
 }T_Edge;
 
+/*------------ Polarity selection -----------*/
+typedef enum {
+    
+    ACTIVE_HIGH = 0 ,
+    ACTIVE_LOW  = 1 ,
+
+}T_Polarity;
+
 /*------------ Divition capture selection -----------*/
 typedef enum {
     NONE=0b00,

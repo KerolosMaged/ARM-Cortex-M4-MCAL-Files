@@ -222,7 +222,7 @@ uint32_t TIMERs_IC_GetValue(TIMx_n *TIMx,T_CH Copy_CH){
 
 /*========= TIMERs Output Compare mode initialization ========*/
 
-void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR ){
+void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Polarity Copy_Polarity,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR){
     
     uint8_t CCER_E[4] = {0,4,8,12};
     uint8_t CCER_P[4] = {1,5,9,13};
@@ -230,6 +230,7 @@ void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Statu
     /*----- ARR value -----*/
     TIMx->REG_ARR= Copy_ARR;
     /*----- Choose of the preload -----*/
+    CLEAR_BIT(TIMx->REG_CR1, 7);
     TIMx->REG_CR1|=(Copy_PRE<<7);
     /*---------- Disable Output Compare --------*/    
     CLEAR_BIT(TIMx->REG_CCER,CCER_E[Copy_CH]);
@@ -297,13 +298,12 @@ void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Statu
     
     }  
 
-    /*----- Activation of the Compare & Edging of the signal ------- */   
-    switch(Copy_Edge)
+    /*----- Activation of the Compare & Polarity of the signal ------- */   
+    switch(Copy_Polarity)
     {
-        case RISING_EDGE  : CLEAR_BIT(TIMx->REG_CCER, CCER_P[Copy_CH]);   CLEAR_BIT(TIMx->REG_CCER,CCER_NP[Copy_CH]);  break;
-        case FALLING_EDGE : SET_BIT(TIMx->REG_CCER, CCER_P[Copy_CH]);     CLEAR_BIT(TIMx->REG_CCER,CCER_NP[Copy_CH]);  break;
-        case BOTH_EDGE    : SET_BIT(TIMx->REG_CCER, CCER_P[Copy_CH]);     SET_BIT(TIMx->REG_CCER,CCER_NP[Copy_CH]);    break;
-        default           :                                                                                            break;
+        case ACTIVE_HIGH  : CLEAR_BIT(TIMx->REG_CCER, CCER_P[Copy_CH]);     break;
+        case ACTIVE_LOW   : SET_BIT(TIMx->REG_CCER, CCER_P[Copy_CH]);       break;
+        default           :                                                 break;
     }
     /*---------- Enable OUTPUT Compare --------*/
     SET_BIT(TIMx->REG_CCER,CCER_E[Copy_CH]);
@@ -394,23 +394,16 @@ Toff = Tperiod - Ton
 
 /*------------------ Advanced Timer Output PWM Setting ------------------*/
 
-void TIMERs_SetPWM_AD(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge, DIRx Copy_DIR , CNS_MODE Copy_Mode ,C_PSC Copy_psc,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR){
+void TIMERs_SetPWM_AD(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Polarity Copy_Polarity, DIRx Copy_DIR ,C_PSC Copy_psc,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR){
 
     CLEAR_BIT(TIMx->REG_CR1,0);
-    TIMx->REG_PSC = Copy_psc;
 
-    if(Copy_DIR == UP)   CLEAR_BIT(TIMx->REG_CR1, 4);
-    else                 SET_BIT(TIMx->REG_CR1, 4);
+    TIMERs_OutputCompareMode(TIMx,Copy_CH,Copy_Status,Copy_Polarity,Copy_PRE,Copy_ARR, Copy_CCR);
 
-    CLEAR_BIT(TIMx->REG_CR1, 5); 
-    CLEAR_BIT(TIMx->REG_CR1, 6);
+    SET_BIT(TIMx->REG_EGR,0);
 
-    SET_BIT(TIMx->REG_CR1, 7);
+    TIMERs_Set_Counter(TIMx,Copy_DIR ,Edge_aligned ,Copy_psc ,Copy_ARR);
 
-    TIMERs_OutputCompareMode(TIMx, Copy_CH, Copy_Status, Copy_Edge, Copy_PRE, Copy_ARR, Copy_CCR);
-
-    SET_BIT(TIMx->REG_EGR, 0);
-    CLEAR_BIT(TIMx->REG_SR, 0);
 
 }
 
@@ -455,23 +448,22 @@ void TIMERs_PWM_SetDuty(TIMx_n *TIMx,T_CH Copy_CH,uint32_t Copy_Duty){
 
 /*------------------ defualt Timer Output PWM Setting ------------------*/
 
+/*!!!!!!!!!!!!!!!! u should to know that when u use this u should set duty and freq !!!!!!!!!!!!!!! */
 
 void TIMERs_SetPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status){
 
-
+    CLEAR_BIT(TIMx->REG_CR1, 0);
 	TIMERs_SetPWM_AD(
     		TIMx,
 			Copy_CH,
 			Copy_Status,
-			RISING_EDGE,
+			ACTIVE_HIGH,
 			UP,
-			Edge_aligned,
 			24,
 			PR_EN,
 			0,
 			0
         );
-    SET_BIT(TIMx->REG_CR1, 0);
     
     /*
      * for servo motor
@@ -483,6 +475,42 @@ void TIMERs_SetPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status){
      */
 }
 
+/**/
+/*=======================================================================*/
+/*==================== Complementry & Dead time =========================*/
+/*=======================================================================*/
+
+void TIMER_1_Com_DTSet(TIMx_n *TIMx,T_CH Copy_CH,T_Polarity Copy_Polarity,uint8_t Copy_DT){
+
+    uint8_t CCER_E[4] = {0,4,8,12};
+    uint8_t CCER_EN[3] = {2,6,10};
+    uint8_t CCER_P[4] = {1,5,9,13};
+    uint8_t CCER_NP[4] = {3,7,11,15};
+
+    /*----- Disable O/P  -----*/
+    CLEAR_BIT(TIMx->REG_CCER,CCER_E[Copy_CH]);
+    CLEAR_BIT(TIMx->REG_CCER,CCER_EN[Copy_CH]);
+    /*----- Enable MOE -----*/
+    SET_BIT(TIMx->REG_BDTR,15);
+    /*----- Select Polarity -----*/
+    switch(Copy_Polarity)
+    {
+        case ACTIVE_HIGH  : CLEAR_BIT(TIMx->REG_CCER, CCER_P[Copy_CH]);   CLEAR_BIT(TIMx->REG_CCER,CCER_NP[Copy_CH]);  break;
+        case ACTIVE_LOW   : SET_BIT(TIMx->REG_CCER, CCER_P[Copy_CH]);     SET_BIT(TIMx->REG_CCER,CCER_NP[Copy_CH]);    break;
+        default           :                                                                                            break;
+    }
+    /*----- Enable O/P  -----*/
+    SET_BIT(TIMx->REG_CCER,CCER_E[Copy_CH]);
+    SET_BIT(TIMx->REG_CCER,CCER_EN[Copy_CH]);
 
 
+}
+
+
+/*=============================================================*/
+/*==================== One pulse mode =========================*/
+/*=============================================================*/
+
+
+void TIMERs_OnePulse(){}
 

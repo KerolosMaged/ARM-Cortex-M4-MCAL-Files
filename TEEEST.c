@@ -6,8 +6,8 @@
 
 
 #include "GPIO/GPIO_INTERFACE.h"
-#include "GPIO/GPIO_PRIVATE.h"
-#include "GPIO/GPIO_CONFGR.h"
+//#include "GPIO/GPIO_PRIVATE.h"
+//#include "GPIO/GPIO_CONFGR.h"
 
 #include "NVIC/NVIC_CONFGR.h"
 #include "NVIC/NVIC_INTERFACE.h"
@@ -84,20 +84,30 @@ int main(void){
     RCC_VoidSysInit(RCC_HSE);
     IWDG_VoidInit();
     SysTick_Init();
+    TIMERs_VoidInit(TIMER1);
     TIMERs_VoidInit(TIMER2);
 
     LED_ACCESS(GPIOA, PIN3);
+    LED_ACCESS1(GPIOA, PIN8);
 
-    //TIMERs_Set_Counter(TIM2,UP,Edge_aligned, 4999, 24999);
-	    while(1){
-	        GPIO_VoidWritePin(GPIOA, PIN3, HIGH);
-	        TIMERs_VoidDelay_ms(TIM2, 5000);
-	        GPIO_VoidWritePin(GPIOA, PIN3, LOW);
+    TIMERs_SetPWM(TIM1, CH1, PWM_MODE_1);
+    TIMERs_PWM_SetFreq(TIM1, 45);
+    TIMERs_PWM_SetDuty(TIM1, CH1, 2);
+
+    while(1){
+    		uint8_t i ;
+        	TIMERs_PWM_SetDuty(TIM1, CH1,i);
 	        TIMERs_VoidDelay_ms(TIM2, 1000);
+	        i++;
+	        if(i>12){
+	        	i=2;
+	        }
 
 
 	        IWDG_VoidRefresh();
 	    }
+
+
 
 
 }

@@ -38,7 +38,7 @@ typedef struct {
     
 }TIMx_n;
 
-#define    TIM1 ((volatile TIMx_n*)(0x40010000 )) 
+#define    TIM1 	     (( volatile TIMx_n* )(0x40010000))
 
 /********** Registers of ( TIM2 to TIM5 ) *************/
 

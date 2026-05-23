@@ -32,14 +32,18 @@ void TIMERs_VoidDelay_us(TIMx_n *TIMx, uint32_t Copy_us);
 /*======================================== [ compare / Capture Mode ] ========================================*/
 /*============================================================================================================*/
 
+/*---------------------------- INPUT MODE Functions ---------------------------------*/
+
 /*========= TIMERs Input Capture mode initialization ========*/
 void TIMERs_InputCaptureInit(TIMx_n *TIMx,T_CH Copy_CH,C_PSC Copy_psc,T_Edge Copy_Edge);
 
 /*========= Get TIMERs Input Capture mode value ========*/
 uint32_t TIMERs_IC_GetValue(TIMx_n *TIMx,T_CH Copy_CH);
 
+/*--------------------------- OUTPUT MODE Functions ----------------------------*/
+
 /*========= TIMERs Output Compare mode initialization ========*/
-void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR );
+void TIMERs_OutputCompareMode(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Polarity Copy_Polarity,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR );
 
 
 
@@ -93,8 +97,7 @@ Toff = Tperiod - Ton
 
 /*------------------ Advanced Timer Output PWM Setting ------------------*/
 
-void TIMERs_SetPWM_AD(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Edge Copy_Edge, DIRx Copy_DIR , CNS_MODE Copy_Mode ,C_PSC Copy_psc,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR);
-
+void TIMERs_SetPWM_AD(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status,T_Polarity Copy_Polarity, DIRx Copy_DIR ,C_PSC Copy_psc,T_PR Copy_PRE ,uint32_t Copy_ARR,uint32_t Copy_CCR);
 /*------------------ Set Freq ------------------*/
 
 void TIMERs_PWM_SetFreq(TIMx_n *TIMx,uint32_t Copy_Freq);
@@ -104,14 +107,24 @@ void TIMERs_PWM_SetFreq(TIMx_n *TIMx,uint32_t Copy_Freq);
 void TIMERs_PWM_SetDuty(TIMx_n *TIMx,T_CH Copy_CH,uint32_t Copy_Duty);
 
 /*------------------ defualt Timer Output PWM Setting ------------------*/
-
+/*!!!!!!!!!!!!!!!! u should to know that when u use this u should set duty and freq !!!!!!!!!!!!!!! */
 void TIMERs_SetPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status);
 
 /*==========================================================================================*/
 
 
+/*=======================================================================*/
+/*==================== Complementry & Dead time =========================*/
+/*=======================================================================*/
+
+void TIMER_1_Com_DTSet(TIMx_n *TIMx,T_CH Copy_CH,T_Polarity Copy_Polarity,uint8_t Copy_DT);
+
+/*=============================================================*/
+/*==================== One pulse mode =========================*/
+/*=============================================================*/
 
 
+void TIMERs_OnePulse(){}
 
 
 #endif
