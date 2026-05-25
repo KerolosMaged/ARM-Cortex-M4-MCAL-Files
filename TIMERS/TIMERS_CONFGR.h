@@ -10,9 +10,15 @@ Github      : https://github.com/KerolosMaged
 #ifndef TIMERS_CONFGR_H
 #define TIMERS_CONFGR_H
 
+/*------ CLOCK Selection -----*/
 
-#define    TIM_CLK  25000000
-
+typedef enum {
+    HSE_CLK = 25000000,
+    HSI_CLK = 16000000,
+    PLL_CLK = 84000000,
+    LSE_CLK = 32768, 
+    LSI_CLK = 32000,
+}T_CLK;
 
 /*----------- Timers alias ----------*/
 
@@ -101,11 +107,13 @@ typedef enum {
 
 }OUTPUT_STATUS;
 
+/*----------- PRELOAD Enable & Disable --------*/
 
 typedef enum {
     PR_DIS=0 , PR_EN=1,
 }T_PR;
 
+/*------- PWM Results back of freq and duty -------*/
 
 typedef struct {
 
@@ -113,5 +121,32 @@ typedef struct {
     f32 DUTY;
 
 }PWM_RESULTS;
+
+/*------ Dead Time Setup ------*/
+
+typedef enum {
+
+    dtg_x    ,
+    dtg_2x   ,
+    dtg_8x   ,
+    dtg_16x  ,
+
+}T_dtg;
+
+/*---- External trigger polarity ----*/
+typedef enum {
+
+    NON_INV = 0,
+    INV = 1,
+
+}TRI_Polarity;
+
+
+
+
+
+
+
+
 
 #endif

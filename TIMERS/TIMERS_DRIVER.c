@@ -16,10 +16,7 @@ Github      : https://github.com/KerolosMaged
 #include "../NVIC/NVIC_CONFGR.h"
 #include "../NVIC/NVIC_INTERFACE.h"
 #include "../NVIC/NVIC_PRIVATE.h"
-/*********** Include of SYSCFG files  **********/
-#include "../SYSCFG/SYSCFG_CONFGR.h"
-#include "../SYSCFG/SYSCFG_INTERFACE.h"
-#include "../SYSCFG/SYSCFG_PRIVATE.h"
+
 /*********** Include of TIMERS files  **********/
 #include "TIMERS_CONFGR.h"
 #include "TIMERS_INTERFACE.h"
@@ -27,7 +24,17 @@ Github      : https://github.com/KerolosMaged
 
 /*========= Timers initialization ==========*/
 
-void TIMERs_VoidInit(TIMX_t TIMx){
+
+
+static uint32_t TIM_CLK = 0 ;
+static uint32_t DEF_PSC = 0 ;
+
+/*===============================================================================================*/
+/*===================== TIMER initalization for timer name and clock from rcc ===================*/
+/*===============================================================================================*/
+
+void TIMERs_VoidInit(TIMX_t TIMx,T_CLK Copy_CLk){
+    /*----------------- Selction of timer ----------------*/
     switch (TIMx)
     {
         case TIMER1  :    RCC_VoidStatusPeripheral_CLK(RCC_APB2,TIM1EN,ENABLE);    break;
@@ -41,12 +48,77 @@ void TIMERs_VoidInit(TIMX_t TIMx){
 
         default     :                                                               break;
     }
+
+    /*----- Set the clock -----*/
+    TIM_CLK = Copy_CLk;
+    /*----- edit the prescaler for clock ------*/
+    DEF_PSC = ((Copy_CLk/1000000)-1);
+
+
 }
 
+/*================== TIMER Break Function from Pin ================*/
 
-/*============================================= Timers' counter  setting =====================================================*/
-/*--------- u should know that Ttick = [(psc+1)/Fclk]     ///     over all period=[(ARR+1)*Ttick ----------------*/
-/*============================================================================================================================*/
+void TIMERs_Break_Pin(TIMx_n *TIMx,T_Polarity Copy_Polarity){
+    /*------ set the break enable -----*/
+    SET_BIT(TIMx->REG_BDTR,12) ;
+    /*------ apply polarity ------*/
+    switch(Copy_Polarity)
+    {
+        case ACTIVE_HIGH  : SET_BIT(TIMx->REG_BDTR,13);   break;
+        case ACTIVE_LOW   : CLEAR_BIT(TIMx->REG_BDTR,13); break;
+        default           :                               break;
+    }
+
+
+}
+
+/*================== TIMER Break Function Software ================*/
+
+void TIMERs_Break_SW(TIMx_n *TIMx){
+    /*------ set the break enable -----*/
+    SET_BIT(TIMx->REG_EGR,7) ;
+}
+
+/*================== TIMER Break INTERRUPT Software ================*/
+
+void TIMERs_Break_IT_Enable(TIMx_n *TIMx) {
+    SET_BIT(TIMx->REG_DIER, 7); // BIE bit
+}
+
+/*================== TIMER Break Reload Software ================*/
+
+void TIMERs_Break_AOE_Enable(TIMx_n *TIMx) {
+    SET_BIT(TIMx->REG_BDTR, 14); // AOE bit
+}
+
+/*================== TIMER Clearing signal ================*/
+
+void TIMERs_Clear(TIMx_n *TIMx, TRI_Polarity Copy_Polarity) {
+    /*--- External trigger prescaler: no prescaler ---*/
+    CLEAR_BIT(TIMx->REG_SMCR, 12);
+    CLEAR_BIT(TIMx->REG_SMCR, 13);
+    /*--- External clock mode 2 disabled ---*/
+    CLEAR_BIT(TIMx->REG_SMCR, 14);
+    /*--- External trigger polarity ---*/
+    switch(Copy_Polarity) {
+        case NON_INV : CLEAR_BIT(TIMx->REG_SMCR, 15); break;
+        case INV     : SET_BIT(TIMx->REG_SMCR,   15); break;
+        default      :                                break;
+    }
+    /*--- Filter: fSAMPLING=fCK_INT, N=8 ---*/
+    TIMx->REG_SMCR &= ~(0xF << 8);
+    TIMx->REG_SMCR |=  (0x3 << 8);
+}
+
+/*================================================================================================================================*/
+/*=================================================== Timer counter setting ======================================================*/
+/*================================================================================================================================*/
+
+
+/*======================================= Set counter setting ==============================================*/
+/*-------- u should know that Ttick = [(psc+1)/Fclk]     ///     over all period=[(ARR+1)*Ttick ------------*/
+/*==========================================================================================================*/
 
 void TIMERs_Set_Counter(TIMx_n *TIMx , DIRx Copy_DIR , CNS_MODE Copy_Mode , uint32_t Copy_PSC , uint32_t Copy_ARR ){
 
@@ -128,6 +200,7 @@ void TIMERs_VoidDelay_us(TIMx_n *TIMx, uint32_t Copy_us)
 /*======================================== [ compare / Capture Mode ] ========================================*/
 /*============================================================================================================*/
 
+/*---------------------------- INPUT MODE Functions ---------------------------------*/
 
 /*========= TIMERs Input Capture mode initialization ========*/
 
@@ -219,6 +292,8 @@ uint32_t TIMERs_IC_GetValue(TIMx_n *TIMx,T_CH Copy_CH){
 
 
 }
+
+/*--------------------------- OUTPUT MODE Functions ----------------------------*/
 
 /*========= TIMERs Output Compare mode initialization ========*/
 
@@ -451,7 +526,7 @@ void TIMERs_PWM_SetDuty(TIMx_n *TIMx,T_CH Copy_CH,uint32_t Copy_Duty){
 /*!!!!!!!!!!!!!!!! u should to know that when u use this u should set duty and freq !!!!!!!!!!!!!!! */
 
 void TIMERs_SetPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status){
-
+    
     CLEAR_BIT(TIMx->REG_CR1, 0);
 	TIMERs_SetPWM_AD(
     		TIMx,
@@ -459,7 +534,7 @@ void TIMERs_SetPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status){
 			Copy_Status,
 			ACTIVE_HIGH,
 			UP,
-			24,
+			DEF_PSC,
 			PR_EN,
 			0,
 			0
@@ -475,23 +550,52 @@ void TIMERs_SetPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status){
      */
 }
 
-/**/
-/*=======================================================================*/
-/*==================== Complementry & Dead time =========================*/
-/*=======================================================================*/
 
-void TIMER_1_Com_DTSet(TIMx_n *TIMx,T_CH Copy_CH,T_Polarity Copy_Polarity,uint8_t Copy_DT){
+
+
+/*=============================================================*/
+/*==================== One pulse mode =========================*/
+/*=============================================================*/
+
+void TIMERs_OnePulse(TIMx_n *TIMx, T_CH Copy_CH, T_Polarity Copy_Polarity,DIRx Copy_DIR, uint32_t Copy_Freq, uint32_t Copy_Duty) {
+   
+    /*----- Stop Timer -----*/
+    CLEAR_BIT(TIMx->REG_CR1, 0);  
+    /*---- prescaler ----*/
+    uint32_t PSC_Val = DEF_PSC;
+    /*----- freq calc ----*/
+    uint32_t ARR_Val = (TIM_CLK / ((PSC_Val + 1) * Copy_Freq)) - 1;
+    /*----- set OPM bit -----*/
+    SET_BIT(TIMx->REG_CR1, 3);  
+
+    TIMERs_SetPWM_AD(TIMx, Copy_CH, ACTIVE, Copy_Polarity, Copy_DIR,DEF_PSC, PR_EN, ARR_Val, Copy_Duty);
+
+
+}
+
+
+
+/*=====================================================================================================================*/
+/*=============================================== Advanced Timers TIM1 ================================================*/
+/*=====================================================================================================================*/
+
+
+/*==================== Complementry & Dead time =========================*/
+
+void TIMER_1_Com_DT_Set(TIMx_n *TIMx,T_CH Copy_CH,T_Polarity Copy_Polarity,f32 Copy_DT){
 
     uint8_t CCER_E[4] = {0,4,8,12};
     uint8_t CCER_EN[3] = {2,6,10};
     uint8_t CCER_P[4] = {1,5,9,13};
     uint8_t CCER_NP[4] = {3,7,11,15};
+    f32 t_DTS = (1 / TIM_CLK);
+    uint8_t DTG = Copy_DT / t_DTS;
+
 
     /*----- Disable O/P  -----*/
     CLEAR_BIT(TIMx->REG_CCER,CCER_E[Copy_CH]);
     CLEAR_BIT(TIMx->REG_CCER,CCER_EN[Copy_CH]);
-    /*----- Enable MOE -----*/
-    SET_BIT(TIMx->REG_BDTR,15);
+
     /*----- Select Polarity -----*/
     switch(Copy_Polarity)
     {
@@ -499,6 +603,34 @@ void TIMER_1_Com_DTSet(TIMx_n *TIMx,T_CH Copy_CH,T_Polarity Copy_Polarity,uint8_
         case ACTIVE_LOW   : SET_BIT(TIMx->REG_CCER, CCER_P[Copy_CH]);     SET_BIT(TIMx->REG_CCER,CCER_NP[Copy_CH]);    break;
         default           :                                                                                            break;
     }
+    /*----- Set the Dead time -----*/
+    uint8_t DTG_Value = 0;
+
+    if (Copy_DT <= (127 * t_DTS))
+    {
+        DTG_Value = (uint8_t)(Copy_DT / t_DTS);
+    }
+    else if (Copy_DT <= ((64 + 63) * 2 * t_DTS))
+    {
+        DTG_Value = 0x80;
+        DTG_Value |= (uint8_t)((Copy_DT / (2 * t_DTS)) - 64);
+    }
+    else if (Copy_DT <= ((32 + 31) * 8 * t_DTS))
+    {
+        DTG_Value = 0xC0;
+        DTG_Value |= (uint8_t)((Copy_DT / (8 * t_DTS)) - 32);
+    }
+    else
+    {
+        DTG_Value = 0xE0;
+        DTG_Value |= (uint8_t)((Copy_DT / (16 * t_DTS)) - 32);
+    }
+
+    TIMx->REG_BDTR &= ~(0xFF);
+    TIMx->REG_BDTR |= DTG_Value;
+    /*----- Enable MOE -----*/
+    SET_BIT(TIMx->REG_BDTR,15);
+
     /*----- Enable O/P  -----*/
     SET_BIT(TIMx->REG_CCER,CCER_E[Copy_CH]);
     SET_BIT(TIMx->REG_CCER,CCER_EN[Copy_CH]);
@@ -507,10 +639,20 @@ void TIMER_1_Com_DTSet(TIMx_n *TIMx,T_CH Copy_CH,T_Polarity Copy_Polarity,uint8_
 }
 
 
-/*=============================================================*/
-/*==================== One pulse mode =========================*/
-/*=============================================================*/
+/*=========================== Timer 6 step PWM ==========================*/
+
+void TIMER1_6_Step_PWM(f32 Copy_DT1, f32 Copy_DT2, f32 Copy_DT3, uint32_t Copy_Freq) {
+    f32 deadtimes[3] = {Copy_DT1, Copy_DT2, Copy_DT3};
+
+    TIMERs_PWM_SetFreq(TIM1, Copy_Freq);
+
+    for(uint8_t i = 0; i < 3; i++) {
+        TIMERs_SetPWM_AD(TIM1, i, PWM_MODE_1, ACTIVE_HIGH, UP, DEF_PSC, PR_EN, 0, 0);
+        TIMER_1_Com_DT_Set(TIM1, i, ACTIVE_HIGH, deadtimes[i]);
+    }
+}
 
 
-void TIMERs_OnePulse(){}
+
+
 
