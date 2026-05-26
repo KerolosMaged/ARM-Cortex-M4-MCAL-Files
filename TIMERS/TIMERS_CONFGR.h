@@ -141,6 +141,13 @@ typedef enum {
 
 }TRI_Polarity;
 
+/*----- Selection of OPM mode ------*/
+
+
+typedef enum {
+    SLOW_OPM, FAST_OPM,
+}M_OPM;
+
 
 
 

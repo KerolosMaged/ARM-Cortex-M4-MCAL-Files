@@ -557,21 +557,55 @@ void TIMERs_SetPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status){
 /*==================== One pulse mode =========================*/
 /*=============================================================*/
 
-void TIMERs_OnePulse(TIMx_n *TIMx, T_CH Copy_CH, T_Polarity Copy_Polarity,DIRx Copy_DIR, uint32_t Copy_Freq, uint32_t Copy_Duty) {
-   
-    /*----- Stop Timer -----*/
-    CLEAR_BIT(TIMx->REG_CR1, 0);  
-    /*---- prescaler ----*/
-    uint32_t PSC_Val = DEF_PSC;
-    /*----- freq calc ----*/
-    uint32_t ARR_Val = (TIM_CLK / ((PSC_Val + 1) * Copy_Freq)) - 1;
-    /*----- set OPM bit -----*/
-    SET_BIT(TIMx->REG_CR1, 3);  
+/*================ Initialization of OPM mode  ================*/
 
-    TIMERs_SetPWM_AD(TIMx, Copy_CH, ACTIVE, Copy_Polarity, Copy_DIR,DEF_PSC, PR_EN, ARR_Val, Copy_Duty);
+void TIMERs_OPM_Init(TIMx_n *TIMx, T_CH Copy_CH, M_OPM Copy_mode ) {
+
+    if(Copy_mode == FAST_OPM)
+    {
+        SET_BIT(TIMx->REG_CCMR1,2);
+    }
+    /*----- set OPM bit -----*/
+    SET_BIT(TIMx->REG_CR1, 3); 
+    /*----- Trigger Mode -----*/
+    TIMx->REG_SMCR &= ~(0b111 << 0);
+    TIMx->REG_SMCR |=  (0b110 << 0);
+    /*---- INPUT Filtering selection -----*/
+    if (Copy_CH == CH1){
+        TIMx->REG_SMCR |= (0b101<<4);
+    }
+    else if (Copy_CH == CH2){
+        TIMx->REG_SMCR |= (0b110<<4);
+    }
 
 
 }
+
+/*================ Setting of OPM mode  ================*/
+
+void TIMERs_OPM_Set(TIMx_n *TIMx,T_CH Copy_CH, T_Polarity Copy_Polarity,DIRx Copy_DIR,uint32_t t_DELAY, uint32_t t_PULSE){
+
+    if (t_DELAY == 0 || t_PULSE == 0){
+        return;
+    }    
+ 
+    /*---- Set the Pulse of OPM*/
+    TIMERs_SetPWM_AD(TIMx, Copy_CH, PWM_MODE_2, Copy_Polarity, Copy_DIR,DEF_PSC, PR_EN, (t_DELAY + t_PULSE ), t_DELAY);
+
+    /*---- Generate update ----*/
+    SET_BIT(TIMx->REG_EGR,0);
+    
+
+}
+
+
+
+/*=====================================================================*/
+/*==================== Encoder interface mode =========================*/
+/*=====================================================================*/
+
+
+
 
 
 

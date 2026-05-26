@@ -145,10 +145,13 @@ void TIMERs_SetPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status);
 /*==================== One pulse mode =========================*/
 /*=============================================================*/
 
+/*================ Initialization of OPM mode  ================*/
 
-void TIMERs_OnePulse(TIMx_n *TIMx, T_CH Copy_CH, T_Polarity Copy_Polarity,DIRx Copy_DIR, uint32_t Copy_Freq, uint32_t Copy_Duty);
+void TIMERs_OPM_Init(TIMx_n *TIMx, T_CH Copy_CH, M_OPM Copy_mode );
 
+/*================ Setting of OPM mode  ================*/
 
+void TIMERs_OPM_Set(TIMx_n *TIMx,T_CH Copy_CH, T_Polarity Copy_Polarity,DIRx Copy_DIR,uint32_t t_DELAY, uint32_t t_PULSE);
 
 
 /*=====================================================================================================================*/
