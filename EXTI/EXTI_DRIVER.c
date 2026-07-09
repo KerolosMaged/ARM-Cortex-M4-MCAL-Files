@@ -25,129 +25,137 @@ Github      : https://github.com/KerolosMaged
 #include "EXTI_INTERFACE.h"
 #include "EXTI_PRIVATE.h"
 
-static void (*EXTI_CALLBACK[16]) (void) = { 0 } ; 
+#define EXTI_LINES_COUNT   16u
+
+/* volatile: written in normal context, read inside ISR context */
+static void (*volatile EXTI_CALLBACK[EXTI_LINES_COUNT])(void) = { 0 };
 
 
+void EXTI_Init(uint8_t EXTI_PORT, uint8_t EXTI_PIN, Trigger_type Trigger_type){
 
-void EXTI_Init(uint8_t EXTI_PORT,uint8_t EXTI_PIN,Trigger_type Trigger_type){
-    
-    SYSCFG_SetEXTI( EXTI_PORT,  EXTI_PIN);
-    switch ( Trigger_type )
-    {
-        case Rising_trigger :   SET_BIT(EXTI_RTSR,EXTI_PIN);    break;
-
-        case Falling_trigger :  SET_BIT(EXTI_FTSR,EXTI_PIN);    break;
-        
-        case Both_trigger :     SET_BIT(EXTI_RTSR,EXTI_PIN);    SET_BIT(EXTI_FTSR,EXTI_PIN);    break;
-        
-        default:                                                break;
-
+    if (EXTI_PIN >= EXTI_LINES_COUNT) {
+        return;   /* invalid pin, ignore */
     }
 
+    SYSCFG_SetEXTI(EXTI_PORT, EXTI_PIN);
 
+    switch (Trigger_type)
+    {
+        case Rising_trigger :
+            SET_BIT(EXTI_RTSR, EXTI_PIN);
+            CLEAR_BIT(EXTI_FTSR, EXTI_PIN);   /* ensure only rising is active */
+        break;
+
+        case Falling_trigger :
+            CLEAR_BIT(EXTI_RTSR, EXTI_PIN);   /* ensure only falling is active */
+            SET_BIT(EXTI_FTSR, EXTI_PIN);
+        break;
+
+        case Both_trigger :
+            SET_BIT(EXTI_RTSR, EXTI_PIN);
+            SET_BIT(EXTI_FTSR, EXTI_PIN);
+        break;
+
+        default:
+        break;
+    }
 }
 
 
 void EXTI_VoidEnable(uint8_t EXTI_PIN, EXTI_type EXTI){
 
+    if (EXTI_PIN >= EXTI_LINES_COUNT) {
+        return;
+    }
+
     switch (EXTI)
     {
-        case INTERRUPT :    SET_BIT(EXTI_IMR,EXTI_PIN);     break; 
-        case EVENT     :    SET_BIT(EXTI_EMR,EXTI_PIN);     break;
+        case INTERRUPT :    SET_BIT(EXTI_IMR, EXTI_PIN);    break;
+        case EVENT     :    SET_BIT(EXTI_EMR, EXTI_PIN);    break;
         default :                                           break;
-    } 
-
+    }
 }
 
-void EXTI_VoidDisable(uint8_t EXTI_PIN , EXTI_type EXTI){
+
+void EXTI_VoidDisable(uint8_t EXTI_PIN, EXTI_type EXTI){
+
+    if (EXTI_PIN >= EXTI_LINES_COUNT) {
+        return;
+    }
 
     switch (EXTI)
     {
-        case INTERRUPT :    CLEAR_BIT(EXTI_IMR,EXTI_PIN);     break; 
-        case EVENT     :    CLEAR_BIT(EXTI_EMR,EXTI_PIN);     break;
+        case INTERRUPT :    CLEAR_BIT(EXTI_IMR, EXTI_PIN);    break;
+        case EVENT     :    CLEAR_BIT(EXTI_EMR, EXTI_PIN);    break;
         default :                                             break;
-    } 
-
+    }
 }
 
 
 uint8_t EXTI_GetPending(uint8_t EXTI_PIN){
 
-    uint8_t Pending = GET_BIT(EXTI_PR,EXTI_PIN);
-    return Pending;
+    if (EXTI_PIN >= EXTI_LINES_COUNT) {
+        return 0;
+    }
+
+    return GET_BIT(EXTI_PR, EXTI_PIN);
 }
 
 
 void EXTI_ClearPending(uint8_t EXTI_PIN){
 
-    SET_BIT(EXTI_PR,EXTI_PIN);
-
-}
-
-
-
-void EXTI_SetCallBack(uint8_t EXTI_PIN,void(*EXTI_Ptr)(void)){
-
-    EXTI_CALLBACK[EXTI_PIN] = EXTI_Ptr;
-
-}
-
-
-void EXTI0_IRQHandler(void){
-
-    if(EXTI_CALLBACK[0]!= NULL){
-        EXTI_CALLBACK[0](); 
+    if (EXTI_PIN >= EXTI_LINES_COUNT) {
+        return;
     }
-    SET_BIT(EXTI_PR,PIN0);
+
+    SET_BIT(EXTI_PR, EXTI_PIN);   /* EXTI_PR is cleared by writing 1 */
 }
 
-void EXTI1_IRQHandler(void){
 
-    if(EXTI_CALLBACK[1]!= NULL){
-        EXTI_CALLBACK[1](); 
+void EXTI_SetCallBack(uint8_t EXTI_PIN, void(*EXTI_Ptr)(void)){
+
+    if (EXTI_PIN < EXTI_LINES_COUNT) {
+        EXTI_CALLBACK[EXTI_PIN] = EXTI_Ptr;
     }
-    SET_BIT(EXTI_PR,PIN1);
 }
 
-void EXTI2_IRQHandler(void){
 
-    if(EXTI_CALLBACK[2]!= NULL){
-        EXTI_CALLBACK[2](); 
-    }
-    SET_BIT(EXTI_PR,PIN2);
-
-}
-void EXTI3_IRQHandler(void){
-
-    if(EXTI_CALLBACK[3]!= NULL){
-        EXTI_CALLBACK[3](); 
-    }
-    SET_BIT(EXTI_PR,PIN3);
-
-}
-void EXTI4_IRQHandler(void){
-
-    if(EXTI_CALLBACK[4]!= NULL){
-        EXTI_CALLBACK[4](); 
-    }
-    SET_BIT(EXTI_PR,PIN4);    
-
+/*======================= Single-line IRQ handlers (0-4) =======================*/
+/* Auto-generated via macro to avoid copy-paste bugs across handlers */
+#define EXTI_IRQ_HANDLER(NUM)                                  \
+void EXTI##NUM##_IRQHandler(void){                             \
+    if (EXTI_CALLBACK[NUM] != NULL) {                          \
+        EXTI_CALLBACK[NUM]();                                  \
+    }                                                          \
+    SET_BIT(EXTI_PR, NUM);                                     \
 }
 
+EXTI_IRQ_HANDLER(0)
+EXTI_IRQ_HANDLER(1)
+EXTI_IRQ_HANDLER(2)
+EXTI_IRQ_HANDLER(3)
+EXTI_IRQ_HANDLER(4)
+
+
+/*======================= Grouped-line IRQ handlers (5-9, 10-15) =======================*/
 void EXTI9_5_IRQHandler(void) {
-    for(int i = 5; i <= 9; i++) {
-        if(GET_BIT(EXTI_PR, (1 << i))) {
-            if(EXTI_CALLBACK[i] != NULL) EXTI_CALLBACK[i]();
-            SET_BIT(EXTI_PR, (1 << i));
+    for (uint8_t i = 5; i <= 9; i++) {
+        if (GET_BIT(EXTI_PR, i)) {              /* fixed: was (1 << i) */
+            if (EXTI_CALLBACK[i] != NULL) {
+                EXTI_CALLBACK[i]();
+            }
+            SET_BIT(EXTI_PR, i);                /* fixed: was (1 << i) */
         }
     }
 }
 
 void EXTI15_10_IRQHandler(void) {
-    for(int i = 10; i <= 15; i++) {
-        if(GET_BIT(EXTI_PR, (1 << i))) {
-            if(EXTI_CALLBACK[i] != NULL) EXTI_CALLBACK[i]();
-            SET_BIT(EXTI_PR, (1 << i));
+    for (uint8_t i = 10; i <= 15; i++) {
+        if (GET_BIT(EXTI_PR, i)) {              /* fixed: was (1 << i) */
+            if (EXTI_CALLBACK[i] != NULL) {
+                EXTI_CALLBACK[i]();
+            }
+            SET_BIT(EXTI_PR, i);                /* fixed: was (1 << i) */
         }
     }
 }

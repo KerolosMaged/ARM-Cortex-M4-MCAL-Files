@@ -6,8 +6,8 @@
 
 
 #include "GPIO/GPIO_INTERFACE.h"
-//#include "GPIO/GPIO_PRIVATE.h"
-//#include "GPIO/GPIO_CONFGR.h"
+#include "GPIO/GPIO_PRIVATE.h"
+#include "GPIO/GPIO_CONFGR.h"
 
 #include "NVIC/NVIC_CONFGR.h"
 #include "NVIC/NVIC_INTERFACE.h"
@@ -69,11 +69,17 @@ void BUTTON_ACCESS(uint8_t Copy_port,uint8_t Copy_pin)
 	GPIO_Init_Def BUTTON;
 	BUTTON.MODE = INPUT;
 	BUTTON.PIN = Copy_pin;
-	BUTTON.PULL = PULL_DOWN;
+	BUTTON.PULL = PULL_UP;
 	GPIO_Init(Copy_port,&BUTTON);
 
 
    // BUTTON_ACCESS(GPIOA, PIN11);
+}
+
+volatile uint8_t Button_state_Trigger = 0 ;
+
+void Button_CallBack(void){
+	 Button_state_Trigger = 1;
 }
 
 
@@ -83,31 +89,39 @@ int main(void){
 
     RCC_VoidSysInit(RCC_HSE);
     IWDG_VoidInit();
-    SysTick_Init();
-    TIMERs_VoidInit(TIMER1);
-    TIMERs_VoidInit(TIMER2);
 
-    LED_ACCESS(GPIOA, PIN3);
-    LED_ACCESS1(GPIOA, PIN8);
 
-    TIMERs_SetPWM(TIM1, CH1, PWM_MODE_1);
-    TIMERs_PWM_SetFreq(TIM1, 45);
-    TIMERs_PWM_SetDuty(TIM1, CH1, 2);
+    TIMERs_VoidInit(TIMER2,HSE_CLK);
 
-    while(1){
-    		uint8_t i ;
-        	TIMERs_PWM_SetDuty(TIM1, CH1,i);
-	        TIMERs_VoidDelay_ms(TIM2, 1000);
-	        i++;
-	        if(i>12){
-	        	i=2;
-	        }
+    LED_ACCESS(GPIOC, PIN13);
+    BUTTON_ACCESS(GPIOA, PIN0);
+    EXTI_Init(GPIOA,PIN0,Falling_trigger);
+    EXTI_SetCallBack(PIN0,Button_CallBack);
+    EXTI_VoidEnable(PIN0,INTERRUPT);
+	    while(1){
+	    	if( Button_state_Trigger == 1){
+
+		    	GPIO_VoidWritePin(GPIOC, PIN13, HIGH);
+		        TIMERs_VoidDelay_ms(TIM2, 500);
+		        GPIO_VoidWritePin(GPIOC, PIN13, LOW);
+		        TIMERs_VoidDelay_ms(TIM2, 500);
+		        Button_state_Trigger = 0;
+	    	}
+	    	else{
+
+		    	GPIO_VoidWritePin(GPIOC, PIN13, HIGH);
+		        TIMERs_VoidDelay_ms(TIM2, 2000);
+		        GPIO_VoidWritePin(GPIOC, PIN13, LOW);
+		        TIMERs_VoidDelay_ms(TIM2, 1000);
+	    	}
+
+	        /*TIMERs_VoidDelay_ms(TIM2, 5000);
+	        GPIO_VoidWritePin(GPIOC, PIN13, HIGH);
+	        TIMERs_VoidDelay_ms(TIM2, 1000);*/
 
 
 	        IWDG_VoidRefresh();
 	    }
-
-
 
 
 }
