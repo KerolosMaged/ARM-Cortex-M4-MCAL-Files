@@ -523,7 +523,7 @@ void TIMERs_PWM_SetDuty(TIMx_n *TIMx,T_CH Copy_CH,uint32_t Copy_Duty){
 
 /*------------------ defualt Timer Output PWM Setting ------------------*/
 
-/*!!!!!!!!!!!!!!!! u should to know that when u use this u should set duty and freq !!!!!!!!!!!!!!! */
+/*!!!!!!!!!!!!!!!! U should to know that when u use this u should set duty and freq !!!!!!!!!!!!!!! */
 
 void TIMERs_SetPWM(TIMx_n *TIMx,T_CH Copy_CH,OUTPUT_STATUS Copy_Status){
     
@@ -604,7 +604,7 @@ void TIMERs_OPM_Set(TIMx_n *TIMx,T_CH Copy_CH, T_Polarity Copy_Polarity,DIRx Cop
 /*==================== Encoder interface mode =========================*/
 /*=====================================================================*/
 
-
+ 
 
 
 

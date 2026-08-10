@@ -121,21 +121,41 @@ void EXTI_SetCallBack(uint8_t EXTI_PIN, void(*EXTI_Ptr)(void)){
 
 
 /*======================= Single-line IRQ handlers (0-4) =======================*/
-/* Auto-generated via macro to avoid copy-paste bugs across handlers */
-#define EXTI_IRQ_HANDLER(NUM)                                  \
-void EXTI##NUM##_IRQHandler(void){                             \
-    if (EXTI_CALLBACK[NUM] != NULL) {                          \
-        EXTI_CALLBACK[NUM]();                                  \
-    }                                                          \
-    SET_BIT(EXTI_PR, NUM);                                     \
+
+void EXTI0_IRQHandler(void){
+    if (EXTI_CALLBACK[0] != NULL) {
+        EXTI_CALLBACK[0]();
+    }
+    SET_BIT(EXTI_PR, PIN0);
 }
 
-EXTI_IRQ_HANDLER(0)
-EXTI_IRQ_HANDLER(1)
-EXTI_IRQ_HANDLER(2)
-EXTI_IRQ_HANDLER(3)
-EXTI_IRQ_HANDLER(4)
+void EXTI1_IRQHandler(void){
+    if (EXTI_CALLBACK[1] != NULL) {
+        EXTI_CALLBACK[1]();
+    }
+    SET_BIT(EXTI_PR, PIN1);
+}
 
+void EXTI2_IRQHandler(void){
+    if (EXTI_CALLBACK[2] != NULL) {
+        EXTI_CALLBACK[2]();
+    }
+    SET_BIT(EXTI_PR, PIN2);
+}
+
+void EXTI3_IRQHandler(void){
+    if (EXTI_CALLBACK[3] != NULL) {
+        EXTI_CALLBACK[3]();
+    }
+    SET_BIT(EXTI_PR, PIN3);
+}
+
+void EXTI4_IRQHandler(void){
+    if (EXTI_CALLBACK[4] != NULL) {
+        EXTI_CALLBACK[4]();
+    }
+    SET_BIT(EXTI_PR, PIN4);
+}
 
 /*======================= Grouped-line IRQ handlers (5-9, 10-15) =======================*/
 void EXTI9_5_IRQHandler(void) {

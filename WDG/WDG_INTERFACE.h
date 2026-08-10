@@ -8,6 +8,8 @@ Github      : https://github.com/KerolosMaged
 #ifndef     WDG_INTERFACE_H
 #define     WDG_INTERFACE_H
 
+#include "WDG_CONFGR.h"
+#include "WDG_PRIVATE.h"
 /*===========================================================*/
 /*========================= IWDG =========================== */
 /*===========================================================*/

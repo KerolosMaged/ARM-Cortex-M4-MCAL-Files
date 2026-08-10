@@ -10,5 +10,32 @@ Github      : https://github.com/KerolosMaged
 #define USART_CONFGR_H
 
 
+/*---- Length of data ----*/
+
+typedef enum{
+
+    bit_8 = 0 ,
+    bit_9 = 1 ,
+
+}LENGTH_b;
+
+/*---- Stop bit ----*/
+
+typedef enum {
+    
+    bit_1       = 0,
+    bit_0_5     = 1,
+    bit_2       = 2,
+    bit_1_5     = 3,
+
+}STOP_b;
+
+typedef enum {
+       
+    PARITY_ODD  = 0 ,
+    PARITY_EVEN = 1 ,
+    PARITY_NONE = 2 ,
+    
+}PARITY_b;
 
 #endif
