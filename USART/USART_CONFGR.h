@@ -67,10 +67,24 @@ typedef enum {
     
 }LBCP_b;
 
-
+/*--- Slave responce----*/
 typedef enum {
     LIN_ROLE_RESPOND,
     LIN_ROLE_RECEIVE,
     LIN_ROLE_IGNORE
 } LIN_SlaveRole_t;
+
+/*--- Interrupts of the USART ---*/
+typedef enum {
+    USART_IT_TXE,     // Transmit Data Register Empty   -> CR1, bit 7
+    USART_IT_CTS,     // CTS flag                        -> CR3, bit 10
+    USART_IT_TC,      // Transmission Complete            -> CR1, bit 6
+    USART_IT_RXNE,    // Received Data Ready to be Read   -> CR1, bit 5
+    USART_IT_IDLE,    // Idle Line Detected               -> CR1, bit 4
+    USART_IT_PE,      // Parity Error                     -> CR1, bit 8
+    USART_IT_LBD,     // Break Flag                       -> CR2, bit 6
+    USART_IT_ERR      // Noise/Overrun/Framing (EIE)      -> CR3, bit 0
+} USART_Interrupt_t;
+
+
 #endif 

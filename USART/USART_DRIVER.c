@@ -52,7 +52,7 @@ void USART_INIT(uint32_t CopyUsart , uint32_t Copy_Clock ){
 
 void USART_SetBaudRate( USART_n *USART_x  , uint32_t Copy_BR){
     /*--- clear OVER8 bit to make it for 16 ---*/
-    CLEAR_BIT( USART_x->USART_CR1 , 14 );
+    CLEAR_BIT( USART_x->USART_CR1 , 15 );
     uint32_t USARTDIV_x100 = (25*TIM_CLK)/(4*Copy_BR);  // transfer the baud rate to value in mantissa and fraction
     uint32_t DIV_Mantissa  = (USARTDIV_x100/100); // is the real part 
     uint32_t DIV_Fraction  = ((USARTDIV_x100 - (DIV_Mantissa * 100)) * 16 + 50) / 100;  // is the fraction part
@@ -187,6 +187,86 @@ uint16_t USART_AsyncRX_Read( USART_n *USART_x ){
 
 
 /*===================================================================================================*/
+/*======================================= Multiprocessor USART ======================================*/
+/*===================================================================================================*/
+
+/*====================== Multiprocessor Initialization (Called ONCE at startup) ==========================*/
+/* Copy_WakeMethod: 0 = Idle Line Detection, 1 = Address Mark Detection */
+
+void USART_Multiprocessor_Init(USART_n *USART_x, LENGTH_b LENGTH_x, STOP_b STOP_x, PARITY_b PARITY_x, uint32_t Copy_BR, uint8_t Copy_WakeMethod){
+
+    /*---- Normal Async config (baud rate, length, stop, parity, TE, RE) ----*/
+    USART_AsyncTX_Init(USART_x, LENGTH_x, STOP_x, PARITY_x, Copy_BR);
+    SET_BIT(USART_x->USART_CR1, 2);    // RE (Receiver Enable) - needed to receive on this bus
+
+    /*---- Select the Wake-up method ----*/
+    CLEAR_BIT(USART_x->USART_CR1, 11);            // Clear WAKE bit first
+    USART_x->USART_CR1 |= (Copy_WakeMethod << 11); // WAKE = 0 (Idle) or 1 (Address Mark)
+}
+
+/*====================== Set this device's own address (used only in Address Mark mode) ==========================*/
+/* Note: F401 does not have a dedicated address register in USART,
+   so the address must be compared manually in software against
+   the byte received via USART_Multiprocessor_ReadAddress(). */
+
+static uint8_t Own_Address = 0;
+
+void USART_Multiprocessor_SetAddress(uint8_t Copy_Address){
+    Own_Address = Copy_Address & 0x7F;   // keep only 7 bits (address range 0-127)
+}
+
+/*====================== Master: Send an Address byte (MSB = 1) ==========================*/
+
+void USART_Multiprocessor_SendAddress(USART_n *USART_x, uint8_t CopyAddress){
+
+    uint8_t AddressByte = (CopyAddress & 0x7F) | 0x80;   // force MSB = 1
+
+    USART_AsyncTX_SendChar(USART_x, AddressByte);
+}
+
+/*====================== Master: Send a Data byte (MSB = 0) ==========================*/
+
+void USART_Multiprocessor_SendData(USART_n *USART_x, uint8_t CopyData){
+
+    uint8_t DataByte = CopyData & 0x7F;   // force MSB = 0
+
+    USART_AsyncTX_SendChar(USART_x, DataByte);
+}
+
+/*====================== Slave: Enter Mute mode ==========================*/
+
+void USART_Multiprocessor_EnterMute(USART_n *USART_x){
+
+    SET_BIT(USART_x->USART_CR1, 1);   // RWU = 1 → go silent
+}
+
+/*====================== Slave: Exit Mute mode manually (optional, hardware also clears RWU automatically) ==========================*/
+
+void USART_Multiprocessor_ExitMute(USART_n *USART_x){
+
+    CLEAR_BIT(USART_x->USART_CR1, 1);   // RWU = 0 → wake up
+}
+
+/*====================== Slave: Check if this incoming byte is MY address (Address Mark mode) ==========================*/
+/* Returns 1 if the byte is an address byte AND it matches my own address.
+   Returns 0 otherwise (not an address byte, or address for someone else). */
+
+uint8_t USART_Multiprocessor_CheckAddress(uint8_t ReceivedByte){
+
+    if((ReceivedByte & 0x80) == 0){
+        return 0;   // MSB = 0 → this is a data byte, not an address
+    }
+
+    uint8_t Address = ReceivedByte & 0x7F;
+
+    return (Address == Own_Address) ? 1 : 0;
+}
+
+
+
+
+
+/*===================================================================================================*/
 /*============================================ Sync USART ===========================================*/
 /*===================================================================================================*/
 
@@ -288,11 +368,33 @@ uint16_t USART_SyncRX_Read( USART_n *USART_x ){
 }
 
 
+/*===================================================================================================*/
+/*================================= Single-Wire Half-Duplex USART ===================================*/
+/*===================================================================================================*/
 
+/*====================== Half-Duplex Initialization (Called ONCE at startup) ==========================*/
+
+void USART_HalfDuplex_Init(USART_n *USART_x, LENGTH_b LENGTH_x, STOP_b STOP_x, PARITY_b PARITY_x, uint32_t Copy_BR){
+
+    /*-- Clearing conflicting modes --*/
+    CLEAR_BIT(USART_x->USART_CR2, 14); // LINEN
+    CLEAR_BIT(USART_x->USART_CR2, 11); // CLKEN
+    CLEAR_BIT(USART_x->USART_CR3, 5);  // SCEN
+    CLEAR_BIT(USART_x->USART_CR3, 1);  // IREN
+
+    /*---- Normal Async config (baud rate, length, stop, parity) ----*/
+    USART_AsyncTX_Init(USART_x, LENGTH_x, STOP_x, PARITY_x, Copy_BR);
+
+    /*---- Enable Receiver too (half-duplex needs both TE and RE) ----*/
+    SET_BIT(USART_x->USART_CR1, 2);   // RE
+
+    /*---- Enable Half-Duplex mode: internally connects TX and RX on one line ----*/
+    SET_BIT(USART_x->USART_CR3, 3);   // HDSEL
+}
 
 
 /*===================================================================================================*/
-/*=========================================== LIN usage =========================================*/
+/*============================================ LIN usage ============================================*/
 /*===================================================================================================*/
 
 
@@ -302,7 +404,7 @@ uint16_t USART_SyncRX_Read( USART_n *USART_x ){
 void USART_LIN_Init(USART_n *USART_x , uint32_t Copy_BR ){
     /*--- Enable LIN mode ---*/
     SET_BIT(USART_x->USART_CR2,14);
-    
+    CLEAR_BIT(USART_x->USART_CR2, 5); 
     /*-- Clearing other modes  --*/
     CLEAR_BIT(USART_x->USART_CR2,12); // STOP0
     CLEAR_BIT(USART_x->USART_CR2,13); // STOP1
@@ -313,7 +415,7 @@ void USART_LIN_Init(USART_n *USART_x , uint32_t Copy_BR ){
 
     /*---- Intialization as an ordinary Async ----*/
     USART_AsyncTX_Init(USART_x,bit_8,bit_1,PARITY_NONE , Copy_BR);
-    
+    SET_BIT(USART_x->USART_CR1, 2); 
 
 }
 
@@ -346,28 +448,20 @@ uint8_t USART_LIN_CalculateChecksum(uint8_t CopyPID, uint8_t *CopyData, uint8_t 
 
 /*====================== Master sends a full frame (Master owns the data) ==========================*/
 
-uint8_t USART_LIN_Master_Send(USART_n *USART_x , uint8_t CopyPID , uint8_t *CopyDATA , uint8_t CopyLength){
-    
- 
+uint8_t USART_LIN_Master_Send(USART_n *USART_x, uint8_t CopyPID, uint8_t *CopyDATA, uint8_t CopyLength){
 
-    USART_LIN_SendBreak(USART_x);                // Send break the start sending 
+    uint8_t CheckSum = USART_LIN_CalculateChecksum(CopyPID, CopyDATA, CopyLength);
 
-    USART_AsyncTX_SendChar(USART_x , 0x55 );     // Send the Sync signal
+    USART_LIN_SendBreak(USART_x);
+    USART_AsyncTX_SendChar(USART_x, 0x55);
+    USART_AsyncTX_SendChar(USART_x, CopyPID);
 
-    USART_AsyncTX_SendChar(USART_x , CopyPID );  // Send the PID signal for each device
-
-    /*-------- Sending Matrix of Data --------*/
-    for(uint8_t Data_i = 0 ;Data_i <=CopyLength ;Data_i++)  
-    {
-        USART_AsyncTX_SendChar(USART_x,CopyDATA[Data_i]);   
-
+    for(uint8_t Data_i = 0; Data_i < CopyLength; Data_i++){
+        USART_AsyncTX_SendChar(USART_x, CopyDATA[Data_i]);
     }
-    
-    /*------ Oeration of CheckSum ------*/
-    uint8_t ExpectedChecksum = USART_LIN_CalculateChecksum(CopyPID, CopyDATA, CopyLength);
-    return ( ExpectedChecksum);
 
-
+    USART_AsyncTX_SendChar(USART_x, CheckSum);  
+    return CheckSum;
 }
 
 /*====================== Master requests a frame (Slave owns the data) ==========================*/
@@ -469,4 +563,89 @@ void USART_LIN_SlaveListen(USART_n *USART_x, uint8_t MyPID, LIN_SlaveRole_t Role
         USART_LIN_SlaveReceiveFrame(USART_x, MyPID, DataBuffer, Length);
     }
     // LIN_ROLE_IGNORE → do nothing
+}
+
+
+
+/*===================================================================================================*/
+/*========================================= USART Interrupts =======================================*/
+/*===================================================================================================*/
+
+
+/*====================== Enable a specific USART interrupt ==========================*/
+
+void USART_INTERRUPT_Selection(USART_n *USART_x, USART_Interrupt_t Copy_Interrupt){
+
+    switch(Copy_Interrupt){
+
+        case USART_IT_TXE:
+            SET_BIT(USART_x->USART_CR1, 7);    // TXEIE
+        break;
+
+        case USART_IT_CTS:
+            SET_BIT(USART_x->USART_CR3, 10);   // CTSIE
+        break;
+
+        case USART_IT_TC:
+            SET_BIT(USART_x->USART_CR1, 6);    // TCIE
+        break;
+
+        case USART_IT_RXNE:
+            SET_BIT(USART_x->USART_CR1, 5);    // RXNEIE  (covers RXNE + ORE)
+        break;
+
+        case USART_IT_IDLE:
+            SET_BIT(USART_x->USART_CR1, 4);    // IDLEIE
+        break;
+
+        case USART_IT_PE:
+            SET_BIT(USART_x->USART_CR1, 8);    // PEIE
+        break;
+
+        case USART_IT_LBD:
+            SET_BIT(USART_x->USART_CR2, 6);    // LBDIE
+        break;
+
+        case USART_IT_ERR:
+            SET_BIT(USART_x->USART_CR3, 0);    // EIE (NF/ORE/FE in multibuffer)
+        break;
+
+        default:
+        break;
+    }
+}
+
+/*====================== Check if a specific USART interrupt flag is set ==========================*/
+
+uint8_t USART_INTERRUPT_GetFlagStatus(USART_n *USART_x, USART_Interrupt_t Copy_Interrupt){
+
+    switch(Copy_Interrupt){
+
+        case USART_IT_TXE:
+            return GET_BIT(USART_x->USART_SR, 7);    // TXE
+
+        case USART_IT_CTS:
+            return GET_BIT(USART_x->USART_SR, 9);    // CTS
+
+        case USART_IT_TC:
+            return GET_BIT(USART_x->USART_SR, 6);    // TC
+
+        case USART_IT_RXNE:
+            return GET_BIT(USART_x->USART_SR, 5);    // RXNE
+
+        case USART_IT_IDLE:
+            return GET_BIT(USART_x->USART_SR, 4);    // IDLE
+
+        case USART_IT_PE:
+            return GET_BIT(USART_x->USART_SR, 0);    // PE
+
+        case USART_IT_LBD:
+            return GET_BIT(USART_x->USART_SR, 8);    // LBD
+
+        case USART_IT_ERR:
+            return 0;   // NF/ORE/FE are separate bits (3,1,2) - check individually if needed
+
+        default:
+            return 0;
+    }
 }
