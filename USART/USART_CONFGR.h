@@ -30,6 +30,8 @@ typedef enum {
 
 }STOP_b;
 
+/*---- Parity bit ----*/
+
 typedef enum {
        
     PARITY_ODD  = 0 ,
@@ -38,4 +40,37 @@ typedef enum {
     
 }PARITY_b;
 
-#endif
+/*---- polarity ----*/
+
+typedef enum {
+       
+    ACTIVE_CLK_LOW  = 0 ,
+    ACTIVE_CLK_HIGH = 1 ,
+    
+}POLARITY_b;
+
+/*---- Phase selection*/
+
+typedef enum {
+       
+    FIRST_CLK  = 0 ,
+    SECOND_CLK = 1 ,
+    
+}PHASE_b;
+ 
+/*---- Last bit clock pulse ----*/
+
+typedef enum {
+       
+    LBCP_OFF  = 0 ,
+    LBCP_ON   = 1 ,
+    
+}LBCP_b;
+
+
+typedef enum {
+    LIN_ROLE_RESPOND,
+    LIN_ROLE_RECEIVE,
+    LIN_ROLE_IGNORE
+} LIN_SlaveRole_t;
+#endif 
