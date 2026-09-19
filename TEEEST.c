@@ -86,7 +86,7 @@ void BUTTON_ACCESS(uint8_t Copy_port, uint8_t Copy_pin)
 }
 
 /*================ MAIN =================*/
-
+/*
 int main(void){
 
     RCC_VoidSysInit(RCC_HSE);
@@ -115,7 +115,7 @@ int main(void){
     }
 
 }
-
+*/
 
 
 
