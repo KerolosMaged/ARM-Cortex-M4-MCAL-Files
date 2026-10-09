@@ -63,6 +63,7 @@ typedef enum{
 
 }SLAVE_SEL;
 
+/*----- Prescaler Values*/
 typedef enum{
 
     N_2   =  0,
@@ -76,5 +77,13 @@ typedef enum{
 
     
 }BR_N;
+
+/*----- Bidirectional mode ----*/
+
+typedef enum{
+    SPI_DIR_RX = 0,
+    SPI_DIR_TX = 1,
+}SPI_DIR;
+
 
 #endif 
