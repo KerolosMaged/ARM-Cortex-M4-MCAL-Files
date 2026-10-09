@@ -20,8 +20,8 @@ Github      : https://github.com/KerolosMaged
 
 typedef enum{
 
-    FALLING_EDGE = 0,
-    RISING_EDGE = 1,
+    FALL_EDGE = 0,
+    RIS_EDGE = 1,
 
 }CLK_POL;
 
@@ -29,8 +29,8 @@ typedef enum{
 
 typedef enum{
 
-    FIRST_CLK = 0,
-    SECOND_CLK = 1,
+    FIR_CLK = 0,
+    SEC_CLK = 1,
 
 }CLK_PHA;
 
