@@ -19,11 +19,10 @@ Github      : https://github.com/KerolosMaged
 /*------ Selection of Polarity ------*/
 
 typedef enum{
-
-    FALL_EDGE = 0,
-    RIS_EDGE = 1,
-
+    RIS_EDGE  = 0,   /* CPOL = 0 : idle Low,  leading edge rising  */
+    FALL_EDGE = 1,   /* CPOL = 1 : idle High, leading edge falling */
 }CLK_POL;
+
 
 /*------ Selection of phase ------*/
 
@@ -64,20 +63,17 @@ typedef enum{
 }SLAVE_SEL;
 
 /*----- Prescaler Values*/
+
 typedef enum{
-
-    N_2   =  0,
-    N_4   =  7,
-    N_8   =  1,
-    N_16  =  2,
-    N_32  =  3,
-    N_64  =  4,
-    N_128 =  5,
-    N_256 =  6,
-
-    
+    N_2   = 0,
+    N_4   = 1,
+    N_8   = 2,
+    N_16  = 3,
+    N_32  = 4,
+    N_64  = 5,
+    N_128 = 6,
+    N_256 = 7,
 }BR_N;
-
 /*----- Bidirectional mode ----*/
 
 typedef enum{
