@@ -184,3 +184,26 @@ void GPIO_VoidTogglePin( uint32_t GPIOx, uint8_t PINx){
         }
 
 }
+
+
+
+void LED_ACCESS(uint8_t Copy_port, uint8_t Copy_pin){
+    GPIO_Init_Def LED;
+    LED.PIN   = Copy_pin;
+    LED.MODE  = OUTPUT;
+    LED.OTYPE = OUTPUT_PP;
+    LED.SPEED = LOW_SPEED;
+    LED.PULL  = NO_PULL;
+    GPIO_Init(Copy_port, &LED);
+}
+
+void BUTTON_ACCESS(uint8_t Copy_port, uint8_t Copy_pin)
+{
+    GPIO_Init_Def BUTTON;
+    BUTTON.MODE = INPUT;
+    BUTTON.PIN  = Copy_pin;
+    BUTTON.PULL = PULL_UP;
+    GPIO_Init(Copy_port, &BUTTON);
+
+    /* BUTTON_ACCESS(GPIOA, PIN11); */
+}

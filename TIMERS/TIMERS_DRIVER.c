@@ -16,6 +16,8 @@ Github      : https://github.com/KerolosMaged
 #include "../NVIC/NVIC_CONFGR.h"
 #include "../NVIC/NVIC_INTERFACE.h"
 #include "../NVIC/NVIC_PRIVATE.h"
+/*********** Include of GPIO files  **********/
+#include "../GPIO/GPIO_INTERFACE.h"
 
 /*********** Include of TIMERS files  **********/
 #include "TIMERS_CONFGR.h"
@@ -56,6 +58,22 @@ void TIMERs_VoidInit(TIMX_t TIMx,T_CLK Copy_CLk){
 
 
 }
+
+
+void PIN_ACCESS_TIMER(uint8_t port, uint8_t pin){
+    GPIO_Init_Def led;
+    led.PIN   = pin;
+    led.MODE  = AF;
+    led.OTYPE = OUTPUT_PP;
+    led.SPEED = MID_SPEED;
+    led.PULL  = NO_PULL;
+    led.AFR   = 1;   /* AF1 for TIM1 */
+
+    GPIO_Init(port, &led);
+
+    /* LED_ACCESS1(GPIOA, PIN8); */
+}
+
 
 /*================== TIMER Break Function from Pin ================*/
 

@@ -15,7 +15,7 @@ Github      : https://github.com/KerolosMaged
 
 void USART_INIT(uint32_t CopyUsart , uint32_t Copy_Clock );
 
-
+void PIN_ACCESS_Usart(uint8_t Copy_port, uint8_t Copy_pin);
 
 /*====================== Set the Baud Rate Value =======================*/
 

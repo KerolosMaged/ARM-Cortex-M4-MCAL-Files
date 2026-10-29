@@ -82,4 +82,50 @@ typedef enum{
 }SPI_DIR;
 
 
+/*----- Status flags (SPI_SR bit positions) -----*/
+
+typedef enum{
+    SPI_FLAG_RXNE   = 0,
+    SPI_FLAG_TXE    = 1,
+    SPI_FLAG_UDR    = 3,
+    SPI_FLAG_CRCERR = 4,
+    SPI_FLAG_MODF   = 5,
+    SPI_FLAG_OVR    = 6,
+    SPI_FLAG_BSY    = 7,
+    SPI_FLAG_FRE    = 8,
+}SPI_FLAG;
+
+/*----- Interrupt sources (SPI_CR2 bit positions) -----*/
+
+typedef enum{
+    SPI_INT_ERR  = 5,
+    SPI_INT_RXNE = 6,
+    SPI_INT_TXE  = 7,
+}SPI_INT;
+
+/*----- DMA requests (SPI_CR2 bit positions) -----*/
+
+typedef enum{
+    SPI_DMA_RX = 0,
+    SPI_DMA_TX = 1,
+}SPI_DMA;
+
+/*----- Error mask (CRCERR | MODF | OVR | FRE) -----*/
+#define SPI_ERR_MASK    ( (1U<<4) | (1U<<5) | (1U<<6) | (1U<<8) )
+
+typedef void (*SPI_CB)(void);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif 

@@ -19,5 +19,9 @@ uint8_t GPIO_uint8_tReadPin( uint32_t GPIOx, uint8_t PINx);
 
 void GPIO_VoidTogglePin( uint32_t GPIOx, uint8_t PINx);
 
+void LED_ACCESS(uint8_t Copy_port, uint8_t Copy_pin);
+
+void BUTTON_ACCESS(uint8_t Copy_port, uint8_t Copy_pin);
+
 
 #endif

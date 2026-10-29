@@ -16,10 +16,9 @@ Github      : https://github.com/KerolosMaged
 #include "../NVIC/NVIC_CONFGR.h"
 #include "../NVIC/NVIC_INTERFACE.h"
 #include "../NVIC/NVIC_PRIVATE.h"
-/*********** Include of SYSCFG files  **********/
-#include "../SYSCFG/SYSCFG_CONFGR.h"
-#include "../SYSCFG/SYSCFG_INTERFACE.h"
-#include "../SYSCFG/SYSCFG_PRIVATE.h"
+/*********** Include of GPIO files  **********/
+#include "../GPIO/GPIO_INTERFACE.h"
+
 /*********** Include of USART files  **********/
 #include "USART_CONFGR.h"
 #include "USART_INTERFACE.h"
@@ -47,6 +46,21 @@ void USART_INIT(uint32_t CopyUsart , uint32_t Copy_Clock ){
     /*--- Set clock for usart ---*/
     TIM_CLK = Copy_Clock;
 }
+
+
+void PIN_ACCESS_Usart(uint8_t Copy_port, uint8_t Copy_pin){
+    GPIO_Init_Def USART_PIN;
+    USART_PIN.PIN   = Copy_pin;
+    USART_PIN.MODE  = AF;
+    USART_PIN.OTYPE = OUTPUT_PP;
+    USART_PIN.SPEED = HIGH_SPEED;
+    USART_PIN.PULL  = NO_PULL;
+    USART_PIN.AFR   = 7;
+    GPIO_Init(Copy_port, &USART_PIN);
+}
+
+
+
 
 /*====================== Set the Baud Rate Value =======================*/
 
